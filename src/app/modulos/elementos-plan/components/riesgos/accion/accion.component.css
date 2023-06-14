@@ -1,0 +1,7 @@
+.modal-lg{
+    max-width: 500px;
+  
+  }
+  .modaldim {
+    z-index: 11000;
+}

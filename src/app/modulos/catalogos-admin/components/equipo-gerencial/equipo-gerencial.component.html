@@ -1,0 +1,234 @@
+<app-pagetitle title="{{nameApp}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card card-border">
+      <!-- BOTON DE NUEVO  -->
+
+      <div class="card-header">
+        <div class="row">
+          <div class="col-sm-6 text-sm-right">
+            <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()">
+              <i class="fas fa-plus fa-lg mr-1"></i> Nuevo
+            </button>
+          </div>
+        </div>
+      </div>
+      <!-- BOTON DE NUEVO FIN -->
+
+      <!-- TABLA -->
+
+      <div class="container card-body table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+          class="table table-striped table-bordered row-border hover">
+          <thead>
+            <tr>
+              <th>Nro.</th>
+              <th>Grados Nombre</th>
+              <th>Cedula</th>
+              <th>Tipo Participante</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Fin</th>
+              <th>Estado</th>
+
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let subSistem of listaEquipoGerencial; let indice=index">
+              <td>{{indice+1}} </td>
+              <td>{{ subSistem.gradoNombres }}</td>
+              <td>{{ subSistem.cedula }}</td>
+              <td>{{ getNombreTipoParticipacion(subSistem.idSprTipoParticipante, listaCat)[0]?.nombre}}</td>
+              <td>{{ subSistem.fechaInicio }}</td>
+              <td>{{ subSistem.fechaFin }}</td>
+              <td>{{ subSistem.estado == "1" ? "Activo" : "Inactivo" }}</td>
+
+              <td class="text-center col-sm-auto">
+                <button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Seleccionar este registro" (click)="updateEquipoGerencial(subSistem)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link waves-effect" title="Eliminar este registro"
+                  (click)="deleteEquipoGerencial(subSistem.idSprEquipoGerencial)">
+                  <i class="fas fa-trash-alt fa-lg"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- TABLA FIN -->
+
+      <!-- TITULO MODAL FIN -->
+
+      <!-- MENSAJE DE ELIMINAR -->
+      <jw-modal id="deleteEquipoGeren">
+        <div class="modal-dialog" style="padding-top: 15%">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+              <button type="button" class="btn-close" (click)="modal.close()"></button>
+            </div>
+            <div class="modal-body">
+              <p class="pl-4">
+                <i class="pl-2 fas fa-exclamation-circle text-warning fa-lg fa-2x"></i>&nbsp; &nbsp; Esta seguro que
+                desea eliminar este registro?
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary waves-effect" (click)="modal.close()">
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-primary" (click)="confirmDelete()">
+                Si, borrar!
+              </button>
+            </div>
+          </div>
+        </div>
+      </jw-modal>
+      <!-- FIN MENSAJE DE ELIMINAR -->
+
+      <jw-modal id="{{ nameModal }}">
+        <div class="modal-dialog modal-lg " role="document"
+          style="margin-top: 120px; padding-top: 6%; margin-top: 40px;">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3 class="modal-title">{{nameEquipoGerencial}}</h3>
+              <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+            </div>
+
+            <div class="card mb-1">
+              <div class="card-body px-5">
+
+                <form class="needs-validation" id="formCatSubsistema" [formGroup]="formUser"
+                  autocomplete="off" >
+
+                  <div class="form-floating mb-3">
+
+
+                    <input type="hidden" id="idSprUsuario" formControlName="cedula" required class="is-invalid" />
+                    <input type="text" maxlength="10"
+                      onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false"
+                      class="form-control" required="true" placeholder="Cédula" formControlName="cedula" [ngClass]="{
+      'is-invalid':
+        this.formUser.get('cedula')?.errors && this.formSubmitted 
+    }" style="display: inline-block; width: 45%; margin-right: 10px;" />
+                    <button type="submit" class="btn btn-info" (click)="buscaPersona()"
+                   >
+                      Buscar
+                    </button>
+                    <small class="invalid-feedback"
+                      *ngIf="this.formUser.get('cedula')?.errors?.['required'] && this.formSubmitted">Este campo no
+                      puede estar vacio</small>
+                    <label style="display: inline-block;">Ingrese número de cédula</label>
+
+
+                  </div>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control" disabled required="true"
+                      value="{{ grado }} {{ apellidos }} {{ nombres }}" />
+                    <label>Información servidor Policial</label>
+                  </div>
+                </form>
+
+                <div class="card mb-1">
+                  <div class="needs-validation">
+                    <form [formGroup]="formEquipoGerencial" autocomplete="off" (ngSubmit)="createEquipoGerencial()">
+
+                      <div class="form-floating mb-3">
+                        <select class="form-select" id="idSprTipoParticipante" formControlName="idSprTipoParticipante"
+                          required="true" [ngClass]="{
+                          'is-invalid':
+                            this.formEquipoGerencial.get(
+                              'idSprTipoParticipante'
+                            )?.errors && this.formSubmitted
+                        }">
+                          <option value=" ">Seleccione</option>
+                          <option *ngFor="let row of listaCat" [value]="row.idSprComun">
+                            {{ row.nombre }}
+                          </option>
+                        </select>
+                        <small class="invalid-feedback"
+                          *ngIf="this.formEquipoGerencial.get('idSprTipoParticipante')?.errors?.['required'] && this.formSubmitted">El
+                          campo rol no puede estar vacio</small>
+                        <label>Seleccione Tipo Particpante:</label>
+
+                      </div>
+
+                      <div class="form-floating mb-3">
+
+                        <input type="date" class="form-control" required="true" placeholder="fecha Inicio"
+                          formControlName="fechaInicio" [ngClass]="{
+                          'is-invalid':
+                            this.formEquipoGerencial.get('fechaInicio')
+                              ?.errors && this.formSubmitted
+                        }" />
+                        <small class="invalid-feedback"
+                          *ngIf="this.formEquipoGerencial.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">Este
+                          campo no puede estar vacio</small>
+                        <label>Fecha Inicio</label>
+                      </div>
+
+
+                      <!-- <div class="form-floating mb-3">
+                        <input type="hidden" id="fechaFin"  formControlName="fechaFin" requiered class="is-invalid">
+                        <input type="date" class="form-control" required="true" placeholder="Fecha Fin"
+                          formControlName="fechaFin" [ngClass]="{
+                          'is-invalid':
+                            this.formEquipoGerencial.get('fechaFin')?.errors?.['required'] &&
+                            this.formSubmitted
+                        }" />
+                        <small class="invalid-feedback"
+                          *ngIf="this.formEquipoGerencial.get('fechaFin')?.errors?.['required'] && this.formSubmitted">Este
+                          campo no puede estar vacio</small>
+                        <label>Fecha Fin</label>
+                      </div> -->
+
+
+                      <div class="form-floating mb-3">
+                        <select class="form-select" id="estado" formControlName="estado" required="true" [ngClass]="{
+                          'is-invalid':
+                            this.formEquipoGerencial.get('estado')?.errors &&
+                            this.formSubmitted
+                        }">
+                          <option value="1" selected>Activo</option>
+                          <option value="2">Inactivo</option>
+                        </select>
+
+                        <small class="invalid-feedback"
+                          *ngIf="this.formEquipoGerencial.get('estado')?.errors?.['required'] && this.formSubmitted">Este
+                          campo no puede estar vacio</small>
+                        <label>Fecha Estado</label>
+                      </div>
+
+
+                      <div class="modal-footer">
+                       
+                        <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal"
+                          (click)="closeModal()">
+                          Cancelar
+                        </button>
+
+                        <button type="submit" class="btn btn-info">
+                          Guardar
+                        </button>
+                      </div>
+                    </form>
+
+
+
+                  </div>
+                </div>
+
+
+
+                <hr />
+              </div>
+            </div>
+          </div>
+        </div>
+      </jw-modal>
+    </div>
+  </div>
+</div>

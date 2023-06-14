@@ -1,0 +1,240 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-6 text-sm-right">
+                        <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                                class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- TABLA -->
+
+            <div class="container card-body table-responsive">
+                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+                    class="table table-striped table-bordered row-border hover">
+                    <thead>
+                        <tr>
+                            <th>Nro.</th>
+                            <th>Actividad</th>
+                            <th>Fecha Inicio</th>
+                            <th>Fecha Cumplimiento</th>
+                            <th>peso</th>
+                            <th>cumplimiento</th>
+                            <th>respaldo</th>
+                            <th>estado</th>
+                            <th>Detalle</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+
+                        <tr *ngFor="let subSistem of listaActividadesN5; let indice=index">
+                            <!-- <td>{{subSistem.idSprActividad}}</td> -->
+                            <td>{{indice+1}} </td>
+                            <td>{{subSistem.nombre}}</td>
+                            <td>{{subSistem.fechaInicio}}</td>
+                            <td>{{subSistem.fechaCumplimiento}}</td>
+                            <td>{{subSistem.peso}}</td>
+                            <td>{{((subSistem.cumplimiento == '1')? 'SI': ((subSistem.cumplimiento == '2')? ('NO'):'En proceso'))}}</td>
+                            <td>{{subSistem.respaldo}}</td>
+                            <td>{{((subSistem.estado == '1')? 'Activo': 'Inactivo')}}</td>
+                            <td class="text-center">
+                                <a data-toggle="tooltip" data-original-title="Ver Detalles">
+                                    <i class="fa fa-file-text-o text-primary m-r-10 fa-2x" abbr
+                                        title="Ingrese Actividades"></i></a>
+
+                            </td>
+                            <td class="text-center col-sm-auto">
+                                <button type="button" tooltip="Editar"
+                                    class="btn btn-sm btn-link waves-effect rounded-pill"
+                                    title="Seleccionar este registro" (click)="updateActividades(subSistem)">
+                                    <i class="fas fa-pencil-alt fa-lg"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-link waves-effect"
+                                    title="Eliminar este registro"
+                                    (click)="deleteActividades(subSistem.idSprActividad)">
+                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- TABLA FIN -->
+
+
+
+
+            <!-- MENSAJE DE ELIMINAR -->
+            <jw-modal id="deleteActivities">
+                <div class="modal-dialog" style="padding-top:15%">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+                            <button type="button" class="btn-close" (click)="modal.close()"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p class="pl-4"><i
+                                    class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp;
+                                &nbsp; Esta seguro que desea eliminar este registro? </p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary waves-effect"
+                                (click)="closeModalEliminar();">Cancelar</button>
+                            <button type="button" class="btn btn-primary" (click)="confirmDelete()">Si,
+                                borrar!</button>
+                        </div>
+                    </div>
+                </div>
+
+            </jw-modal>
+
+            <!-- MENSAJE DE ELIMINAR FIN -->
+
+
+
+            <!-- MODAL PARA CREAR Y EDITAR -->
+            <jw-modal id="{{nameModal}}">
+                <div class="modal-dialog modal-lg " style="margin-top: 120px;" role="document">
+                    <div class="modal-content">
+
+                        <div class="modal-header">
+
+                            <h3 class="modal-title">{{nameActivadades}}</h3>
+                            <button type="button" class="btn-close" (click)="closeModalFooter()"
+                                aria-label="Close"></button>
+                        </div>
+                        <div class="card mb-1">
+                            <div class="card-body px-5">
+
+                                <form class="needs-validation was-validated" novalidate id="formPlanAccion"
+                                    id="formActividad" [formGroup]="formActividad" autocomplete="off"
+                                    (ngSubmit)="createActividadesPlanaccionN5()">
+                                    
+                                    <div *ngIf ="edit1">
+                                    <div class="shadow-sm p-2 mb-2 bg-body rounded">CONFIGURACIÓN</div>
+
+                                    <div class="form-group row mb-2">
+                                        <div class="col col-md-2 text-md-right">
+                                            <label for="nombre"
+                                                class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-10">
+                                            <input type="hidden" id="nombre" formControlName="nombre" requiered class="is-invalid">
+                                            <input type="text" class="form-control form-control-sm" required="true" style="height: 55px;"
+                                              formControlName="nombre" maxlength="150" oninput="this.value = this.value.toUpperCase();"
+                                              [ngClass]="{'is-invalid': this.formActividad.get('nombre')?.errors  && this.formSubmitted  }">
+                        
+                                            <small class="font-italic" *ngIf="this.formActividad.get('nombre')?.errors?.['required'] && this.formSubmitted">Este campo no puede estar vacio</small>
+                                           
+                                    </div>
+                                </div>
+
+                                    <div class="form-group row mb-2">
+                                        <div class="col col-md-2 text-md-right">
+                                            <label for="fechaInicio"
+                                                class=" form-control-label text-md-right pt-1"><b>Fecha
+                                                    Inicio:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <input type="date" class="form-control" required="true"
+                                                placeholder="fechaInicio" formControlName="fechaInicio"
+                                                [ngClass]="{'is-invalid': this.formActividad.get('fechaInicio')?.errors &&  this.formSubmitted }" date>
+                                                <small class="font-italic" *ngIf="this.formActividad.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">Este campo no puede estar vacio</small>
+                                        </div>
+
+                                        <div class="col col-md-2 text-md-right">
+                                            <label for="fechaCumplimiento"
+                                                class=" form-control-label text-md-right pt-1"><b>Fecha
+                                                    Cumplimiento:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <input type="date" class="form-control" required="true"
+                                                placeholder="fechaCumplimiento" formControlName="fechaCumplimiento"
+                                                [ngClass]="{'is-invalid': this.formActividad.get('fechaCumplimiento')?.errors &&  this.formSubmitted }"
+                                                date>
+                                                <small class="font-italic" *ngIf="this.formActividad.get('fechaCumplimiento')?.errors?.['required'] && this.formSubmitted">Este campo no puede estar vacio</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-4">
+                                        <div class="col col-md-2 text-md-right">
+                                            <label for="peso" class=" form-control-label text-md-right pt-1"><b>Peso
+                                                    Actividad:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <input type="number" min="0" max="100" maxlength="3"
+                                                onkeydown="return false" name="peso" id="peso"
+                                                placeholder="Solo caracteres Numericos" class="form-control" required
+                                                autocomplete="off"
+                                                onkeypress="return(event.charCode>= 48 && event.charCode <= 57)"
+                                                formControlName="peso" required autofocus placeholder="peso"
+                                                [ngClass]="{'is-invalid': this.formActividad.get('peso')?.errors &&  this.formSubmitted }">
+                                                <small class="font-italic" *ngIf="this.formActividad.get('peso')?.errors?.['required'] && this.formSubmitted">Este campo no puede estar vacio</small>
+                                        </div>
+                                        <div class="col col-md-2 text-xl-right">
+                                            <label for="estado"
+                                                class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <select id="estado" class="form-select" formControlName="estado" required [ngClass]="{'is-invalid':this.formActividad.get('estado')?.errors &&this.formSubmitted}">
+                                                <option [value]="item.value" *ngFor="let item of selectItems">
+                                                    {{item.label}}
+                                                </option>
+                                            </select>
+                                            <small class="invalid-feedback"
+                                            *ngIf="this.formActividad.get('estado')?.errors?.['required'] && this.formSubmitted">Este
+                                            campo no puede estar vacio</small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div *ngIf="edit">
+
+                                    <div class="shadow-sm p-2 mb-2 bg-body rounded">CONFIGURACIÓN</div>
+
+                                    <div class="form-group row mb-2">
+                                        <div class="col col-md-2 text-xl-right">
+                                            <label for="cumplimiento"
+                                                class=" form-control-label text-md-right pt-1"><b>Cumplimiento
+                                                    Actividad:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <select id="cumplimiento" class="form-select" formControlName="cumplimiento"
+                                                required>
+                                                <option [value]="item.value" *ngFor="let item of selectItems1">
+                                                    {{item.label}}
+                                                </option>
+                                            </select>                                            
+                                        </div>
+
+                                        <div class="col col-md-2 text-md-right">
+                                            <label for="respaldo"
+                                                class=" form-control-label text-md-right pt-1"><b>Respaldo:</b></label>
+                                        </div>
+                                        <div class="col-12 col-md-4">
+                                            <input maxlength="50" type="text" id="respaldo" class="form-control"
+                                                formControlName="respaldo"
+                                                oninput="this.value = this.value.toUpperCase();" required autofocus
+                                                placeholder="" >
+                                                
+                                        </div>
+                                    </div>
+                                </div>
+
+                                    <div class="modal-footer" id="modal">
+                                        <button type="submit" class="btn btn-info">Guardar</button>
+                                        <button type="button" class="btn btn-secondary waves-effect"
+                                            data-dismiss="modal" (click)="closeModalFooter()">Cerrar</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </jw-modal>

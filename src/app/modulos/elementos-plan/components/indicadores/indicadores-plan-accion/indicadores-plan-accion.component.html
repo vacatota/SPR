@@ -1,0 +1,208 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border">
+            <div class="container card-body table-responsive">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="accordion" class="mb-3">
+                            <div class="card mb-1" *ngFor="let row of dataPlanAccionIndicadores; let indiceUno=index">
+                                <div class="card-header" id="abc">
+                                    <h5 class="m-0">
+                                        <a class="text-dark" data-bs-toggle="collapse" href="#id_{{indiceUno + 1}}"
+                                            aria-expanded="true">
+                                            <i class="mdi mdi-help-circle me-1 text-primary"></i>
+                                            {{row.nombre}}
+                                        </a>
+                                    </h5>
+                                </div>
+
+                                <div id="id_{{indiceUno + 1}}" class="collapse" aria-labelledby='abcd'
+                                    data-bs-parent="#accordion">
+                                    <div class="card-body">
+
+                                        <div class="row">
+                                            <div class="col-sm-6 text-sm-right">
+                                                <button type="button" class="btn btn-sm btn-success waves-effect pl-4"
+                                                    (click)="openModal(row)"><i class="fas fa-plus fa-lg mr-1"></i>
+                                                    Nuevo</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="container card-body table-responsive pt-2">
+                                            <table class="table table-striped table-bordered row-border hover">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Nro.</th>
+                                                        <th>Nombre</th>
+                                                        <th>Unidad que genera información</th>
+                                                        <th>Fecha inicio</th>
+                                                        <th>Editar</th>
+                                                        <th>Borrar</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr *ngFor="let fila of row.indicadores; let indice=index">
+                                                        <td>{{indice+1}}</td>
+                                                        <td>{{fila.nombre}}</td>
+                                                        <td>{{fila.descripcion}}</td>
+                                                        <td>{{fila.fechaInicio}}</td>
+                                                        <td> <button type="button" tooltip="Editar"
+                                                                class="btn btn-sm btn-link waves-effect rounded-pill"
+                                                                title="Configurar este indicador" (click)="edit(fila)">
+                                                                <i class="fas fa-pencil-alt fa-lg"></i>
+                                                            </button></td>
+                                                        <td class="text-center col-sm-auto">
+                                                            <div class="row">
+                                                                <!-- <button type="button" tooltip="Editar"
+                                                           class="btn btn-sm btn-link waves-effect rounded-pill"
+                                                                title="Editar este registro"
+                                                                (click)="edit(row)">
+                                                                <i class="fas fa-cog fa-lg"></i>
+                                                            </button> -->
+
+                                                                <button type="button"
+                                                                    class="btn btn-sm btn-link waves-effect"
+                                                                    title="Eliminar este registro"
+                                                                    (click)="delete(fila)">
+                                                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                                                </button>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL PARA LA CONFIRMACION DEL BORRADO -->
+<jw-modal id="delete-PlanAccion" [isDelete]="true" (confirmation)="confirmDelete()"></jw-modal>
+
+
+<!-- ############################################################################################################# -->
+<!-- ######################################    MODALES       ##################################################### -->
+<!-- ############################################################################################################# -->
+
+<jw-modal id="{{nameModal}}">
+  <!-- MODAL PARA CREAR Y EDITAR -->
+      <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%">
+          <div class="modal-content">
+              <div class="modal-header pb-3">
+                  <h3 class="modal-title">{{nameApp}}</h3>
+                  <button type="button" class="btn-close" (click)="modal.close();"
+                      aria-label="Close"></button>
+              </div>
+              <div class="modal-body pT-4">
+                  <form action="#" [formGroup]="formPlanAccionIndicadores" class="needs-validation was-validated">
+                      <div class="row">
+
+
+
+
+                 <div class="form-group row mb-2">
+                     <div class="col col-md-2 text-md-right">
+                         <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+                     </div>
+                     <div class="col-12 col-md-10">
+                         <input type="hidden" id="idSprIndicador" formControlName="idSprIndicador" requiered
+                             class="is-invalid">
+                         <input type="text" maxlength="150" class="form-control" style="text-transform:uppercase;"
+                             required="true" placeholder="Nombre" formControlName="nombre" oninput="this.value = this.value.toUpperCase();"
+                             [ngClass]="{'is-invalid': this.formPlanAccionIndicadores.get('nombre')?.errors  && this.submitted  }">
+                         <div class="col text-danger">
+                             <span class="font-italic"
+                                 *ngIf="this.formPlanAccionIndicadores.get('nombre')?.errors?.['required'] && this.submitted">Este
+                                 campo no puede estar vacio</span>
+                         </div>
+                     </div>
+                 </div>
+
+                 <div class="form-group row mb-2">
+                   <div class="col col-md-2 text-md-right">
+                       <label for="descripcion"
+                           class=" form-control-label text-md-right pt-1"><b>Descripción:</b></label>
+                   </div>
+                   <div class="col-12 col-md-10">
+                       <textarea class="form-control" maxlength="500" id="descripcion" placeholder="Descripcion"
+                           formControlName="descripcion"
+                           [ngClass]="{'is-invalid': this.formPlanAccionIndicadores.get('descripcion')?.errors  && this.submitted  }">
+                           </textarea>
+                       <div class="col text-danger">
+                           </div>
+                   </div>
+               </div>
+
+               <div class="form-group row mb-2">
+                 <div class="col col-md-2 text-md-right">
+                     <label for="unidadInformacion"
+                         class=" form-control-label text-md-right pt-1"><b>Unidad Información:</b></label>
+                 </div>
+                 <div class="col-12 col-md-10">
+                     <textarea class="form-control"  maxlength="250"id="unidadInformacion" placeholder="Unidad de informacion"
+                         formControlName="unidadInformacion"
+                         [ngClass]="{'is-invalid': this.formPlanAccionIndicadores.get('unidadInformacion')?.errors  && this.submitted  }">
+                         </textarea>
+                     <div class="col text-danger">
+                     </div>
+                 </div>
+             </div>
+
+
+
+             <div class="form-group row mb-2">
+               <div class="col col-md-2 text-md-right">
+                   <label for="fechaInicio" class=" form-control-label text-md-right pt-1"><b>Fecha Inicio:</b></label>
+               </div>
+               <div class="col-12 col-md-4">
+                   <input type="date" class="form-control" required="true" placeholder="fechaInicio" formControlName="fechaInicio"
+                   [ngClass]="{'is-invalid': this.formPlanAccionIndicadores.get('fechaInicio')?.errors  && this.submitted  }" date>
+                   <div class="col text-danger">
+                     <span class="font-italic" *ngIf="this.formPlanAccionIndicadores.get('fechaInicio')?.errors?.['required'] && this.submitted">El campo fecha no puede estar vacio</span>
+                   </div>
+               </div>
+
+             <div class="col col-md-1 text-md-right">
+                 <label for="estado" class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+             </div>
+             <div class="col-12 col-md-5 ">
+               <select class="form-select " id="estado" formControlName="estado"
+                   required="true"
+                   [ngClass]="{'is-invalid': this.formPlanAccionIndicadores.get('estado')?.errors  && this.submitted  }">
+
+                   <option [value]="item.value" *ngFor="let item of selectItems">{{item.label}}
+                   </option>
+               </select>
+               <div class="col text-danger">
+                   <span class="font-italic"
+                       *ngIf="this.formPlanAccionIndicadores.get('estado')?.errors?.['required'] && this.submitted">Este
+                       campo no puede estar vacio</span>
+               </div>
+           </div>
+         </div>
+
+
+
+                      </div>
+                  </form>
+              </div>
+              <div class="modal-footer">
+                  <button type="button" class="btn btn-secondary waves-effect"
+                      (click)="modal.close();">Cerrar</button>
+                  <button type="button" class="btn btn-info" (click)="onSubmit()"
+                      >Guardar</button>
+              </div>
+          </div>
+      </div>
+</jw-modal>
+

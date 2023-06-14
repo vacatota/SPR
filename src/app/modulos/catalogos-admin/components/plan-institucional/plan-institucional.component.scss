@@ -1,0 +1,15 @@
+.mostrar{
+    background-color: rgb(0,0,0,0.4);
+    left: 0px;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 9999;
+    display: block;
+  }
+
+  .overflow-scroll .modal-content {
+    max-height: 1200px;
+    overflow-y: scroll;
+}

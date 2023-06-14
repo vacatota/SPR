@@ -1,0 +1,487 @@
+<app-pagetitle title="{{nameApp}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card card-border">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-sm-6 text-sm-right">
+            <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+          </div>
+        </div>
+      </div>
+      <div class="container card-body table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+          class="table table-striped table-bordered row-border hover">
+          <thead>
+            <tr>
+              <th>Nro.</th>
+              <th>Nombre Proceso</th>
+              <th>Responsable</th>
+              <th>Fecha Inicio</th>
+              <th>Estado</th>
+              <th>Desempeño</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let proceso of dataProcesos;let indice=index">
+              <td>{{indice+1}}</td>
+              <td>{{proceso.nombre}}</td>
+              <td>{{proceso.gradoNombres}}</td>
+              <td>{{proceso.fechaInicio}}</td>
+              <td>{{((proceso.estado == '1')? 'Activo': 'Inactivo')}}</td>
+              <td><button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Editar este registro" (click)="desempenioInit(proceso)">
+                  <i class="fas fa-file-alt fa-lg"></i>
+                </button></td>
+              <td class="text-center col-sm-auto">
+                <button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Editar este registro" (click)="update(proceso)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link waves-effect" title="Eliminar este registro"
+                  (click)="delete(proceso.idSprProceso)">
+                  <i class="fas fa-trash-alt fa-lg"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<jw-modal id="delete">
+  <div class="modal-dialog" style="padding-top:15%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp; &nbsp; Esta
+          seguro que desea eliminar este registro? </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" (click)="modal.close();">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmDelete()">Si, borrar!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</jw-modal>
+
+<jw-modal id="{{nameModal}}">
+
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%;">
+    <div class="modal-content">
+      <div class="modal-header pb-3">
+        <h3 class="modal-title">{{nameApp}};;;;</h3>
+        <button type="button" class="btn-close" (click)="modal.close();" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body px-5">
+        <form action="#" [formGroup]="formProceso" class="needs-validation was-validated form">
+
+          <input type="hidden" id="idSprProceso" formControlName="idSprProceso">
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Unidad:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <input type="text" maxlength="55" class="form-control" style="text-transform:uppercase;"
+                readonly="readonly" required="true" value="{{nombreUnidad}}">
+            </div>
+          </div>
+
+          <div *ngIf="idSprNivel5 != nivelSelect" class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprEstrategia" class=" form-control-label text-md-right pt-1"><b>Estrategia:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <select class="form-select col-9" id="idSprEstrategia" formControlName="idSprEstrategia" required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprEstrategia')?.errors  && this.formSubmitted  }">
+                <option value=" ">Seleccione</option>
+                <option *ngFor="let estrategia of dataEstrategiasProcess" value={{estrategia.idSprEstrategia}}>
+                  {{estrategia.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprEnfoque')?.errors?.['required'] && this.formSubmitted">El
+                  campo rol no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="idSprNivel5 == nivelSelect" class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprObjetivo" class=" form-control-label text-md-right pt-1"><b>Objetivo</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <select class="form-select col-10" id="idSprObjetivo" formControlName="idSprObjetivo" required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprObjetivo')?.errors  && this.formSubmitted  }">
+                <option value=" ">Seleccione</option>
+                <option *ngFor="let objetivo of dataObjetivo" value={{objetivo.idSprObjetivo}}>
+                  {{objetivo.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprPerspectiva')?.errors?.['required'] && this.formSubmitted">El
+                  campo rol no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+
+              <input type="hidden" id="idSprProceso" formControlName="idSprProceso" requiered class="is-invalid">
+              <input type="hidden" id="idSprEquipoGerencialAnterior" formControlName="idSprEquipoGerencialAnterior" requiered class="is-invalid">
+              <input type="hidden" id="idSprParticipanteElemento" formControlName="idSprParticipanteElemento" requiered class="is-invalid">
+              <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;" required="true"
+                placeholder="Proceso" formControlName="nombre" oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formProceso.get('nombre')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('nombre')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="descripcion" class=" form-control-label text-md-right pt-1"><b>Descripcion:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <textarea class="form-control" id="descripcion" placeholder="Descripcion del Proceso"
+                formControlName="descripcion" rows="7" cols="30"
+                [ngClass]="{'is-invalid': this.formProceso.get('descripcion')?.errors  && this.formSubmitted  }">
+                  </textarea>
+              <div class="col text-danger">
+                <span class="font-italic" *ngIf="this.formProceso.get('descripcion')?.errors?.['required'] && this.formSubmitted
+                      ">Este campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2 ">
+            <div class="col col-md-2 text-md-right">
+              <label for="producto" class=" form-control-label text-md-right pt-1"><b>Producto</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <textarea class="form-control" id="producto" placeholder="Producto" formControlName="producto"
+                [ngClass]="{'is-invalid': this.formProceso.get('producto')?.errors  && this.formSubmitted  }">
+                </textarea>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('producto')?.errors?.['required'] && this.formSubmitted">Este
+                  campo
+                  no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprEquipoGerencial" class=" form-control-label text-md-right pt-1"><b>Responsable:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <select class="form-select col-9" id="idSprEquipoGerencial" formControlName="idSprEquipoGerencial" required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprEquipoGerencial')?.errors  && this.formSubmitted  }">
+                <option value=" ">Seleccione</option>
+                <option *ngFor="let row of dataResponsableProceso" value={{row.idSprEquipoGerencial}}>
+                  {{row.participacion}} | {{row.nombres}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprEnfoque')?.errors?.['required'] && this.formSubmitted">El
+                  campo rol no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprTipoProceso" class=" form-control-label text-md-right pt-1"><b>Tipo de
+                  proceso:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-12" id="idSprTipoProceso" formControlName="idSprTipoProceso"
+                required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprTipoProceso')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let tipo of dataTipoProceso" value={{tipo.idSprEspecialUno}}>
+                  {{tipo.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprTipoProceso')?.errors?.['required'] && this.formSubmitted">El campo
+                  nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprTipoCliente" class=" form-control-label text-md-right pt-1"><b>Tipo de
+                  cliente:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-9" formControlName="idSprTipoCliente" required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprTipoCliente')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let catCliente of dataCatComun" value={{catCliente.idSprComun}}>
+                  {{catCliente.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprTipoCliente')?.errors?.['required'] && this.formSubmitted">El campo
+                  nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="fechaInicio" class=" form-control-label text-md-right pt-1"><b>Fecha Inicio:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="date" class="form-control" required="true" placeholder="fechaInicio"
+                formControlName="fechaInicio"
+                [ngClass]="{'is-invalid': this.formProceso.get('fechaInicio')?.errors  && this.formSubmitted  }" date>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">El campo fecha
+                  no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="fechaFin" class=" form-control-label text-md-right pt-1"><b>Fecha Fin:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="date" class="form-control" required="true" placeholder="fechaFin" formControlName="fechaFin"
+                [ngClass]="{'is-invalid': this.formProceso.get('fechaFin')?.errors  && this.formSubmitted  }" date>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('fechaFin')?.errors?.['required'] && this.formSubmitted">El campo fecha no
+                  puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="tiempoCiclo" class=" form-control-label text-md-right pt-1"><b>Tiempo Ciclo:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="hidden" id="idSprProceso" formControlName="idSprProceso" requiered class="is-invalid">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control"
+                style="text-transform:uppercase;" required="true" placeholder="dias" onkeypress="return
+                  (event.charCode>= 48 && event.charCode <= 57)" formControlName="tiempoCiclo"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formProceso.get('tiempoCiclo')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('tiempoCiclo')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="numeroPersonaAsignada" class=" form-control-label text-md-right pt-1"><b>Numero Personas
+                  Asignadas:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="hidden" id="idSprProceso" formControlName="idSprProceso" requiered class="is-invalid">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control"
+                style="text-transform:uppercase;" required="true" placeholder="N° personas" onkeypress="return
+                (event.charCode>= 48 && event.charCode <= 57)" formControlName="numeroPersonaAsignada"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formProceso.get('numeroPersonaAsignada')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('numeroPersonaAsignada')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="procesoDocumentado" class=" form-control-label text-md-right pt-1"><b>Proceso
+                  Documentado:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="hidden" id="idSprProceso" formControlName="idSprProceso" requiered class="is-invalid">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control"
+                style="text-transform:uppercase;" required="true" placeholder="N° p. documentado" onkeypress="return
+              (event.charCode>= 48 && event.charCode <= 57)" formControlName="procesoDocumentado"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formProceso.get('procesoDocumentado')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('procesoDocumentado')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="procesoCertificado" class=" form-control-label text-md-right pt-1"><b>Proceso
+                  Certificado:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="hidden" id="idSprProceso" formControlName="idSprProceso" requiered class="is-invalid">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control"
+                style="text-transform:uppercase;" required="true" placeholder="N° p. certificado" onkeypress="return
+            (event.charCode>= 48 && event.charCode <= 57)" formControlName="procesoCertificado"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formProceso.get('procesoCertificado')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('procesoCertificado')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprMejoras" class=" form-control-label text-md-right pt-1"><b>Mejoras:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-12" id="idSprMejoras" formControlName="idSprMejoras" required="true"
+                [ngClass]="{'is-invalid': this.formProceso.get('idSprMejoras')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let tipoMejoras of dataMejoras" value={{tipoMejoras.idSprComun}}>
+                  {{tipoMejoras.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('idSprMejoras')?.errors?.['required'] && this.formSubmitted">El campo
+                  nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="fechaCertificacion" class=" form-control-label text-md-right pt-1"><b>Fecha
+                  Certificación:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="date" class="form-control" required="true" placeholder="fechaCertificacion"
+                formControlName="fechaCertificacion"
+                [ngClass]="{'is-invalid': this.formProceso.get('fechaCertificacion')?.errors  && this.formSubmitted  }"
+                date>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formProceso.get('fechaCertificacion')?.errors?.['required'] && this.formSubmitted">El
+                  campo fecha no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right ">
+              <label for="nombre" class="col-form-label text-md-right"><b>Areas:</b></label>
+            </div>
+            <div class="col-12 col-md-10 ">
+
+              <table class="table table-striped table-bordered row-border hover" id="dataTable">
+                <thead class="bg-azul text-white">
+
+                </thead>
+                <tbody>
+                  <tr *ngFor="let row of dataAreasProcess; let indice=index" >
+                    <td>
+                      <input type="checkbox" class="form-check-input" (change)="onChange($event)"
+                        [checked]="row.checked" id={{row.idSprArea}} name="{{row.idSprArea}}" value={{row.idSprArea}}>
+                      <a><label for={{row.idSprArea}} class="form-check-label px-2 ">
+                          {{row.nombre}}
+                        </label></a>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-xl-right">
+              <label for="estado" class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <select id="estado" class="form-select" formControlName="estado" required>
+                <option [value]="item.value" *ngFor="let item of selectItems">{{item.label}}
+                </option>
+              </select>
+              <small class="invalid-feedback" *ngIf="formSubmitted && procesoForm['estado'].errors">Campo
+                requerido.</small>
+
+            </div>
+          </div>
+
+
+
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" (click)="modal.close();">Cerrar</button>
+        <button type="button" class="btn btn-info" (click)="onSubmit()">Guardar</button>
+      </div>
+    </div>
+  </div>
+</jw-modal>
+
+
+
+<!-- Inicio modal detalle proyeto -->
+<jw-modal id="{{nameModal1}}">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:5%; max-width: 75%; max-height: 90%;">
+    <div class="modal-content">
+      <div class="modal-header pb-3">
+        <h3 class="modal-title">{{desripcionProceso}}</h3>
+        <button type="button" class="btn-close" (click)="modal.close();" aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-5">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="hito-tab" data-bs-toggle="tab" data-bs-target="#hito" type="button" role="tab"
+              aria-controls="hito" aria-selected="false">Desempeño Proceso</button>
+
+            <button class="nav-link" id="detalle-tab" data-bs-toggle="tab" data-bs-target="#detalle"
+              type="button" role="tab" aria-controls="detalle" aria-selected="true">Detalle</button>
+
+          </div>
+        </nav>
+        <div class="tab-content" id="nav-tabContent">
+
+          <div class="tab-pane fade show active" id="hito" role="tabpanel" aria-labelledby="hito-tab">
+            <app-desempenio-proceso [init]="desempenio"></app-desempenio-proceso>
+          </div>
+          <div class="tab-pane fade " id="detalle" role="tabpanel" aria-labelledby="detalle-tab">...1</div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+
+</jw-modal>

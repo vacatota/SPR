@@ -1,0 +1,699 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card card-border">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-sm-6 text-sm-right">
+            <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()">
+              <i class="fas fa-plus fa-lg mr-1"></i> Nuevo
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container card-body table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+          class="table table-striped table-bordered row-border hover">
+          <thead>
+            <tr>
+              <th colspan="5"></th>
+              <th colspan="4" class="text-center">Indicadores</th>
+              <th colspan="5"></th>
+            </tr>
+            <tr>
+              <th>Nro.</th>
+              <th>Nombre Plan de Acción</th>
+              <th>Objetivo Operativo</th>
+              <th>Area</th>
+              <th>Descripción Plan de Acción</th>
+              <th><i class="fa fa-square  m-r-10" style='color: red'></i></th>
+              <th><i class="fa fa-circle m-r-10" style='color: green'></i></th>
+              <th><i class="fa fa-exclamation-triangle m-r-10" style='color: orange'></i></th>
+              <th><i class="fa fa-stop" style='color: blue'></i></th>
+
+              <th>Riesgo</th>
+              <th>Acciones</th>
+              <th>Estado</th>
+              <th>Detalle</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let subSistem of filtrarObjetivos(dataObjetivo, dataPlanAccion); let indice = index;  ">
+              <td>{{ indice + 1 }}</td>
+              <td>{{ subSistem.nombre }}</td>
+              <td>
+                {{getNombreObjetivo(subSistem.idSprObjetivo,dataObjetivo)![0]?.nombre}}
+
+              </td>
+              <td>{{ subSistem.area.nombre }}</td>
+              <td>{{ subSistem.descripcion }}</td>
+              <td>1</td>
+              <td>1</td>
+              <td>1</td>
+              <td>1</td>
+              <td>1</td>
+              <td>2</td>
+              <td>{{ subSistem.estado == "1" ? "Activo" : "Inactivo" }}</td>
+              <td class="text-center col-sm-auto">
+                <a data-toggle="tooltip" data-original-title="Detalles"
+                  class="btn btn-sm btn-link waves-effect rounded-pill" title="Abrir Detalles"
+                  (click)="modalElemDetalles(subSistem)">
+                  <i class="far fa-file-alt" [ngStyle]="{ 'font-size': '2em' }"></i>
+                </a>
+              </td>
+
+              <td class="text-center col-sm-auto">
+                <button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Seleccionar este registro" (click)="updatePlanesAccion(subSistem, dataArea)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link waves-effect" title="Eliminar este registro"
+                  (click)="deletePlanAcccion(subSistem.idSprPlanAccion)">
+                  <i class="fas fa-trash-alt fa-lg"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <jw-modal id="delete">
+        <div class="modal-dialog" style="padding-top: 15%">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+              <button type="button" class="btn-close" (click)="modal.close()"></button>
+            </div>
+            <div class="modal-body">
+              <p class="pl-4">
+                <i class="pl-2 fas fa-exclamation-circle text-warning fa-lg fa-2x"></i>&nbsp; &nbsp; Esta seguro que
+                desea eliminar este registro?
+              </p>
+              <p class="pl-4">
+                <i class="pl-2 fas fa-exclamation-circle text-warning fa-lg fa-2x"></i>&nbsp; &nbsp; Se eliminaran las
+                actividades, areas y demas componentes asociados al plan de acción a eliminar. Esta seguro que desea
+                continuar?
+              </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary waves-effect" (click)="modal.close()">
+                Cancelar
+              </button>
+              <button type="button" class="btn btn-primary" (click)="confirmDelete()">
+                Si, borrar!
+              </button>
+            </div>
+          </div>
+        </div>
+      </jw-modal>
+
+      <!-- MODAL PARA CREAR Y EDITAR -->
+      <jw-modal id="{{ nameModal }}">
+        <div class="modal-dialog modal-lg" style="padding-top:6%">
+          <div class="modal-content">
+            <div class="modal-header  pb-3">
+              <h3 class="modal-title">{{namePlanes}}</h3>
+              <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+            </div>
+            <div class="card mb-1">
+              <div class="modal-body pT-3">
+
+                <form class="needs-validation" novalidate id="formPlanAccion" [formGroup]="formPlanAccion"
+                  autocomplete="off"
+                  (ngSubmit)="createPlanAccion(areaAnteriores, areaElementoGuardado, areaElementosOriginales, patrocinadorOriginal )">
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="idSprObjetivo" class="col-form-label text-md-right"><b>Objetivo:</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+                      <select id="idSprObjetivo" class="form-select form-control-sm" formControlName="idSprObjetivo"
+                        required [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('idSprObjetivo')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('idSprObjetivo')?.errors,
+                        }">
+                        <option>Seleccione</option>
+                        <option *ngFor="let catObjetivoPlan of dataObjetivo"
+                          value="{{ catObjetivoPlan.idSprObjetivo }}">
+                          {{ catObjetivoPlan.nombre }}
+                        </option>
+                      </select>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('idSprObjetivo')?.errors?.['required'] && this.formSubmitted">Campo
+                        requerido.</small>
+                    </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="idSprPlanAccion" class="col-form-label text-md-right"><b>Plan de Acción:</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+                      <input id="idSprPlanAccion" type="text" class="form-control" required="true"
+                        formControlName="nombre" oninput="this.value = this.value.toUpperCase();" [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('nombre')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('nombre')?.errors,
+                        }" />
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('nombre')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+
+                    </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="idSprPlanAccion" class="col-form-label text-md-right"><b>Descripción:</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+
+                      <textarea type="text" class="form-control" required="true" formControlName="descripcion"
+                        oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();"
+                        maxlength="1000" [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('descripcion')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('descripcion')?.errors,
+                        }"></textarea>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('descripcion')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+
+                    </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="idSprPlanAccion" class="col-form-label text-md-right"><b>Justificación</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+
+                      <textarea type="text" class="form-control" required="true" formControlName="justificacion"
+                        maxlength="50"
+                        oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();"
+                        [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('justificacion')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('justificacion')?.errors,
+                        }"></textarea>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('justificacion')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+
+                    </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="idSprPlanAccion" class="col-form-label text-md-right"><b>Alcance</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+                      <textarea type="text" class="form-control" required="true" formControlName="alcance"
+                        maxlength="150"
+                        oninput="this.value = this.value.charAt(0).toUpperCase() + this.value.slice(1).toLowerCase();"
+                        [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('alcance')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('alcance')?.errors,
+                        }"></textarea>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('alcance')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+
+                    </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="estado" class="col-form-label text-md-right"><b>Patrocinador:</b></label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+                      <select (change)="setEquipoGenrecial($event.target,dataEquipoGerencial)" id="idSprEquipoGerencial"
+                        class="form-select" formControlName="idSprEquipoGerencial" required="true" [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('idSprEquipoGerencial')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('idSprEquipoGerencial')?.errors,
+                        }">
+                        <option>Seleccione</option>
+                        <option *ngFor="let catEquipo of dataEquipoGerencial"
+                          value="{{ catEquipo.idSprEquipoGerencial }}">
+                          {{ catEquipo.gradoNombres + ' cedula ' + catEquipo.cedula }}
+                        </option>
+                      </select>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('idSprEquipoGerencial')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row mb-2">
+                    <div class=" col col-md-2 text-md-right">
+                      <label for="fechaInicio" class=" form-control-label text-md-right pt-1"><b>Fecha
+                          Inicio:</b></label>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <input type="date" class="form-control" required="true" placeholder="fecha Inicio"
+                        formControlName="fechaInicio" [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('fechaInicio')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('fechaInicio')?.errors,
+                        }" />
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+
+                    </div>
+
+                    <div class=" col col-md-2 text-md-right">
+                      <label for="fechaFin" class=" form-control-label text-md-right pt-1"><b>Fecha
+                          Fin:</b></label>
+                    </div>
+                    <div class="col-12 col-md-4">
+                      <input type="date" class="form-control" required="true" placeholder="Fecha Fin"
+                        formControlName="fechaFin" [ngClass]="{
+                          'is-invalid': this.formPlanAccion.get('fechaFin')?.errors && this.formSubmitted,
+                          'is-valid': !this.formPlanAccion.get('fechaFin')?.errors,
+                        }" />
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('fechaFin')?.errors?.['required'] && this.formSubmitted">Este
+                        campo no puede estar vacio</small>
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="estado" class="col-form-label text-md-right"><b>Estado:</b></label>
+                    </div>
+                    <div class="col-12 col-md-4 ">
+                      <select id="estado" class="form-select" formControlName="estado" required="true" [ngClass]="{
+                        'is-invalid': this.formPlanAccion.get('estado')?.errors && this.formSubmitted,
+                        'is-valid': !this.formPlanAccion.get('estado')?.errors,
+                      }">
+                        <option value="1" selected>Activo</option>
+                        <option value="2">Inactivo</option>
+                      </select>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('estado')?.errors?.['required'] && this.formSubmitted">Este campo
+                        no puede estar vacio</small>
+                    </div>
+                  </div>
+
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right ">
+                      <label for="impactoProceso" class="col-form-label text-md-right"><b>Impacto
+                          Proceso:</b>
+                      </label>
+                    </div>
+                    <div class="col-12 col-md-10 ">
+                      <select id="impactoProceso" class="form-select form-control-sm" formControlName="impactoProceso"
+                        required [ngClass]="{
+                              'is-invalid': this.formPlanAccion.get('impactoProceso')?.errors && this.formSubmitted,
+                              'is-valid': !this.formPlanAccion.get('impactoProceso')?.errors,
+                            }">
+                        <option>Seleccione</option>
+                        <option *ngFor="let rowProceso of dataProceso" value="{{ rowProceso.idSprProceso }}">
+                          {{ rowProceso.nombre }}{{ rowProceso.idSprProceso }}
+                        </option>
+                      </select>
+                      <small class="invalid-feedback"
+                        *ngIf="this.formPlanAccion.get('impactoProceso')?.errors?.['required'] && this.formSubmitted">Campo
+                        requerido.</small>
+                    </div>
+                  </div>
+
+
+                  <div id="accordion" class="mb-3">
+                    <div class="card mb-1">
+                      <div class="card-header" id="abc">
+                        <h5 class="m-0">
+                          <a class="btn btn-sm btn-success waves-effect" data-bs-toggle="collapse" href="#idnuevo0"
+                            aria-expanded="true">
+                            <i class="fas fa-plus fa-lg mr-1"></i>
+                            Local.Impacto
+                          </a>
+                        </h5>
+                      </div>
+                      <div id="idnuevo0" class="collapse" aria-labelledby='abcd' data-bs-parent="#accordion">
+                        <div class="card-body">
+                          <div class="row ">
+
+
+                            <div class="col-md-6">
+
+                              <h4 class="header-title">Estructura Organizacional</h4>
+
+                              <div class="card flex justify-content-center">
+                                <p-tree [value]="unidades" [filter]="true" selectionMode="single"
+                                  [(selection)]="selectedFile" (onNodeSelect)="nodeSelect($event)" scrollHeight="300px"
+                                  (onNodeExpand)="nodeExpand($event)">
+                                </p-tree>
+                              </div>
+                            </div>
+
+                            <div class="col-md-6">
+                              <h4 class="header-title">Datos Localidad Impacto</h4>
+
+                              <div class="form-floating mb-2">
+                                <textarea [ngClass]="{
+                                            'is-invalid': this.formPlanAccion.get('localidadImpacto')?.errors && this.formSubmitted,
+                                            'is-valid': !this.formPlanAccion.get('localidadImpacto')?.errors,
+                                          }" type="text" id="localidadImpacto" class="form-control form-control-sm"
+                                  formControlName="localidadImpacto" oninput="this.value = this.value.toUpperCase();"
+                                  required rows="6" cols="50">
+                                              </textarea>
+
+                                <label for="localidadImpacto">Nombre</label>
+                              </div>
+
+                            </div>
+
+
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div id="accordion" class="mb-3">
+                    <div class="card mb-1">
+                      <div class="card-header" id="abc">
+                        <h5 class="m-0">
+                          <a class="btn btn-sm btn-success waves-effect" data-bs-toggle="collapse" href="#idnuevo"
+                            aria-expanded="true">
+                            <i class="fas fa-plus fa-lg mr-1"></i>
+                            Areas
+                          </a>
+                        </h5>
+                      </div>
+                      <div id="idnuevo" class="collapse" aria-labelledby='abcd' data-bs-parent="#accordion">
+                        <div class="card-body">
+                          <div class="row ">
+                            <div>
+
+                              <table datatable [dtTrigger]="dtTrigger" *ngIf="dataArea?.length"
+                                class="table table-striped table-bordered row-border hover">
+                                <thead>
+                                  <tr>
+                                    <th>Nro.</th>
+                                    <th>Nombre Área</th>
+                                    <th>check</th>
+
+
+                                  </tr>
+                                </thead>
+
+                                <tbody *ngIf="!edit">
+
+                                  <tr *ngFor="let subSistem of dataArea; let indice = index">
+                                    <td>{{ indice + 1 }}</td>
+                                    <td>{{ subSistem.nombre }}</td>
+                                    <td>
+                                      <input class="form-check-input"
+                                        (change)="fieldsChange($event, subSistem.idSprArea)" type="checkbox" value=""
+                                        id="flexCheckDefault">
+                                    </td>
+                                  </tr>
+                                </tbody>
+
+                                <tbody *ngIf="edit">
+
+                                  <tr *ngFor="let subSistem of areaElementoGuardado; let indice = index">
+                                    <td>{{ indice + 1 }}</td>
+                                    <td>{{ subSistem.nombre }}</td>
+                                    <td>
+                                      <input [checked]="subSistem.checked" class="form-check-input"
+                                        (change)="fieldsChange($event, subSistem.idSprArea)" type="checkbox"
+                                        id="flexCheckDefault" [(ngModel)]="subSistem.checked"
+                                        name="{{subSistem.nombre}}" [ngModelOptions]="{standalone: true}">
+
+                                    </td>
+                                  </tr>
+                                </tbody>
+
+                              </table>
+
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div id="accordion" class="mb-3">
+                    <div class="card mb-1">
+                      <div class="card-header" id="abc">
+                        <h5 class="m-0">
+                          <a class="btn btn-sm btn-success waves-effect" data-bs-toggle="collapse" href="#idnuevo2"
+                            aria-expanded="true">
+                            <i class="fas fa-plus fa-lg mr-1"></i>
+                            Participantes
+                          </a>
+                        </h5>
+                      </div>
+                      <div id="idnuevo2" class="collapse" aria-labelledby='abcd' data-bs-parent="#accordion">
+                        <div class="card-body">
+                          <div class="row ">
+                            <div class="col-sm-12">
+                              <div class="form-floating mb-3">
+                                <div>
+                                  <div class="form-group row mb-2">
+                                    <div class="col-12 col-md-2">
+                                      <label for="cedula"
+                                        class=" form-control-label text-md-right"><b>Documento:</b></label>
+                                    </div>
+
+                                    <div class="col-12 col-md-10">
+                                      <input type="text" maxlength="10" formControlName="cedula"
+                                        onKeypress="if (event.keyCode <45 || event.keyCode> 57) event.returnValue = false"
+                                        class="form-control" required="true" placeholder="Cédula" id="cedula"
+                                        name="cedula" placeholder="Digite cédula de identidad/ciudadanía" [ngClass]="{
+                                          'is-invalid': this.formPlanAccion.get('cedula')?.errors && this.formSubmitted,
+                                          'is-valid': !this.formPlanAccion.get('cedula')?.errors,
+                                        }">
+                                    </div>
+                                    <div class="col text-danger">
+                                      <span class="font-italic"
+                                        *ngIf="this.formPlanAccion.get('cedula')?.errors?.['required'] && this.formSubmitted">Este
+                                        campo no puede estar vacio</span>
+                                    </div>
+                                  </div>
+
+                                  <div class="form-group row mb-2">
+                                    <div class="col col-md-2 text-md-right">
+                                      <label for="nombreParticipante"
+                                        class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+                                    </div>
+                                    <div class="col-12 col-md-10">
+                                      <input formControlName="nombreParticipante" type="text" maxlength="50"
+                                        class="form-control" style="text-transform:uppercase;" required="true"
+                                        id="nombreParticipante" name="nombreParticipante"
+                                        placeholder="Ingrese Apellidos y nombres del participante"
+                                        oninput="this.value = this.value.toUpperCase();" type="text" [ngClass]="{
+                                          'is-invalid': this.formPlanAccion.get('nombreParticipante')?.errors && this.formSubmitted,
+                                          'is-valid': !this.formPlanAccion.get('nombreParticipante')?.errors,
+                                        }">
+                                      <div class="col text-danger">
+                                        <span class="font-italic"
+                                          *ngIf="this.formPlanAccion.get('nombreParticipante')?.errors?.['required'] && this.formSubmitted">Este
+                                          campo no puede estar vacio</span>
+                                      </div>
+                                    </div>
+                                  </div>
+
+
+                                  <div class="form-group row mb-2">
+                                    <div class="col col-md-2 text-md-right">
+                                      <label for="grado"
+                                        class=" form-control-label text-md-right pt-1"><b>Grado:</b></label>
+                                    </div>
+                                    <div class="col-12 col-md-10">
+                                      <select class="form-select " id="grado" formControlName="grado" name="grado"
+                                        required="true" [ngClass]="{
+                                          'is-invalid': this.formPlanAccion.get('grado')?.errors && this.formSubmitted,
+                                          'is-valid': !this.formPlanAccion.get('grado')?.errors,
+                                        }">
+                                        <option value=" ">Seleccione</option>
+                                        <option *ngFor="let grado of grados" value="{{ grado }}">
+                                          {{ grado }}
+                                        </option>
+
+                                      </select>
+
+
+                                      <div class="col text-danger">
+                                        <span class="font-italic"
+                                          *ngIf="this.formPlanAccion.get('grado')?.errors?.['required'] && this.formSubmitted">Este
+                                          campo no puede estar vacio</span>
+                                      </div>
+                                    </div>
+
+
+
+                                    <div class="modal-footer">
+                                      <button type="button" class="btn btn-info"
+                                        (click)="pushParticipante()">Agregar</button>
+                                    </div>
+
+                                    <table class="table table-striped table-bordered row-border hover">
+                                      <thead>
+
+                                        <tr>
+                                          <th>Nro.</th>
+                                          <th>Grado</th>
+                                          <th>Nombre</th>
+                                          <th>Cedula</th>
+                                          <th>fecha Inicio</th>
+                                          <th>fecha Fin</th>
+                                          <th>Estado</th>
+                                          <th>Acción</th>
+                                        </tr>
+                                      </thead>
+
+                                      <tbody>
+                                        <tr *ngFor="let subSistem of inputsAnteriores; let i = index;  ">
+
+                                          <td>{{ i + 1 }}</td>
+                                          <td>{{ subSistem.gradoNombres.split(" ")[0] }}</td>
+                                          <td>{{ subSistem.gradoNombres.substring(subSistem.gradoNombres.indexOf(' ') +
+                                            1) }}</td>
+                                          <td>{{ subSistem.cedula }}</td>
+                                          <td>{{ subSistem.fechaInicio }}</td>
+                                          <td>{{ subSistem.fechaFin }}</td>
+                                          <td *ngIf="subSistem.estado==1">Activo</td>
+                                          <td *ngIf="subSistem.estado==2">Inactivo</td>
+
+
+
+
+
+
+                                          <td class="text-center col-sm-auto">
+
+                                            <button type="button" class="btn btn-sm btn-link waves-effect"
+                                              title="Eliminar este registro"
+                                              (click)="removeInputAnteriores(i, subSistem)">
+                                              <i class="fas fa-trash-alt fa-lg"></i>
+                                            </button>
+                                          </td>
+                                        </tr>
+
+
+                                        <tr *ngFor="let subSistem of participantesNuevos; let i = index;  ">
+
+                                          <td>{{ i + 1 }}</td>
+                                          <td>{{ subSistem.grado }}</td>
+                                          <td>{{ subSistem.nombre }}</td>
+                                          <td>{{ subSistem.cedula }}</td>
+                                          <td>{{ subSistem.fechaInicial }}</td>
+                                          <td>{{ subSistem.fechaFinal }}</td>
+                                          <td *ngIf="subSistem.estadoParticipa==1">Activo</td>
+                                          <td *ngIf="subSistem.estadoParticipa==2">Inactivo</td>
+                                          <td>
+
+                                            <button type="button" class="btn btn-sm btn-link waves-effect"
+                                              title="Eliminar este registro" (click)="removeInput(i)">
+                                              <i class="fas fa-trash-alt fa-lg"></i>
+                                            </button>
+                                          </td>
+                                        </tr>
+                                      </tbody>
+                                    </table>
+
+                                  </div>
+
+
+
+                                </div>
+
+                              </div>
+
+
+
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <div class="modal-footer">
+
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal"
+                      (click)="closeModal()">
+                      Cerrar
+                    </button>
+
+                    <button type="submit" class="btn btn-info">
+                      Guardar
+                    </button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </jw-modal>
+
+      <!-- MODAL DETALLES PLAN ACCION -->
+      <jw-modal id="{{ modalEle }}">
+        <div class="modal-dialog" style="max-width: 1200px; max-height: 800px; margin-top: 120px;">
+          <div class="modal-content">
+            <div class="modal-header ">
+              <h3 class="modal-title">{{nameDetalles}}</h3>
+
+
+
+              <button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+            </div>
+            <div class="card mb-1">
+              <div class="card-body px-5">
+                <ul class="nav nav-tabs" id="elementosTab" role="tablist">
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#actividades"
+                      type="button" role="tab" aria-controls="actividades" aria-selected="true">
+                      Actividades
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="profile-tab" data-toggle="tab" data-target="#riesgos" type="button"
+                      role="tab" aria-controls="riesgos" aria-selected="false">
+                      Riesgos
+                    </button>
+                  </li>
+                  <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="contact-tab" data-toggle="tab" data-target="#indicadores" type="button"
+                      role="tab" aria-controls="indicadores" aria-selected="false">
+                      Indicadores
+                    </button>
+                  </li>
+                </ul>
+                <div class="tab-content" id="myTabContent">
+                  <div class="tab-pane fade show active" id="actividades" role="tabpanel" aria-labelledby="home-tab">
+                    <app-actividades [planAccionInput]="modalPlanAccion"></app-actividades>
+                  </div>
+                  <div class="tab-pane fade" id="riesgos" role="tabpanel" aria-labelledby="profile-tab">
+                    <h1>AQUI VAN LOS RIESGOS</h1>
+                    >
+                  </div>
+                  <div class="tab-pane fade" id="indicadores" role="tabpanel" aria-labelledby="contact-tab">
+                    <h1>AQUI VAN LOS INDICADORES</h1>
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </jw-modal>
+    </div>
+  </div>
+</div>

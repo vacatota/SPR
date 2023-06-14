@@ -1,0 +1,15 @@
+<div id="wrapper" >
+    <app-header></app-header>
+    <app-sidebar></app-sidebar>
+    <div class="content-page" >
+        <div class="content" >
+            <!-- Start Content-->
+            <div class="container-fluid" >
+                <!-- En cada pagina/aplicacion se debe incluir lo siguiente: 
+                <app-pagetitle title="Titulo pagina" [breadcrumbItems]="array con arbol de migas de pan"></app-pagetitle>-->
+                <router-outlet></router-outlet>
+            </div>
+        </div>
+    </div>
+    <app-footer></app-footer>
+</div>

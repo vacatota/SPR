@@ -1,0 +1,247 @@
+<app-pagetitle title="{{nameApp}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-sm-6 text-sm-right">
+                        <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                                class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="container card-body table-responsive">
+                <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-bordered row-border hover">
+                    <thead>
+                        <tr>
+                            <th>Nro.</th>
+                            <th>Grado</th>
+                            <th>Documento</th>
+                            <th>Nombres</th>
+                            <th>Acciones</th>
+                          </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let row of dataApp; let indice=index">
+                            <td>{{indice+1}}</td>
+                            <td>{{row.grado}}.</td>
+                            <td>{{row.cedula}}</td>
+                            <td>{{row.nombres}} {{row.apellidos}}</td>
+                            <td class="text-center col-sm-auto">
+                                <button type="button" tooltip="Editar"
+
+                                    class="btn btn-sm btn-link waves-effect rounded-pill"
+                                    title="Seleccionar este registro"
+                                    (click)="changeDataUser(row)">
+                                    <i class="fas fa-pencil-alt fa-lg"></i>
+                                </button>
+                                <button type="button" class="btn btn-sm btn-link waves-effect"
+                                title="Eliminar este registro" 
+                                (click)="delete(row.idSprUsuario)">
+                                    <i class="fas fa-trash-alt fa-lg"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<jw-modal id="delete">
+        <div class="modal-dialog" style="padding-top:15%">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+                    <button type="button" class="btn-close"  (click)="modal.close()"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp; &nbsp;  Esta seguro que desea eliminar este registro? </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" 
+                        (click)="modal.close();">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="confirmDelete()"
+                        >Si, borrar!</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+
+</jw-modal>
+
+
+<jw-modal id="{{nameModal}}">
+    <!-- MODAL PARA CREAR Y EDITAR -->
+    <div class="modal-dialog modal-lg modal-dialog-scrollable" role="document" style="padding-top:6%">
+        <div class="modal-content">
+          <div class="modal-header bg-primary">
+            <h4 class="modal-title" id="exampleModalLabel1">Buscar persona en el SIIPNE 3W</h4>
+            <button type="button" class="btn-close" (click)="modal.close();"
+            aria-label="Close"></button>
+          </div>
+          <div class="card mb-1">
+          <div class="card-body px-5">
+            <form id="formCatSubsistema" [formGroup]="formUser" autocomplete="off" (ngSubmit)="createUser()">
+              <div class="form-group row mb-2">
+                <div class="col-12 col-md-2">
+                  <label for="nombre" class=" form-control-label text-md-right"><b>Documento:</b></label>
+                </div>
+                
+                <div class="col-12 col-md-8">
+                  <input type="hidden" id="idSprUsuario"  formControlName="idSprUsuario" requiered class="is-invalid">
+                  <input type="text" maxlength="10" onKeypress="if (event.keyCode < 45 || event.keyCode > 57) event.returnValue = false" class="form-control" required="true" placeholder="Cédula"
+                  formControlName="cedula"
+                  [ngClass]="{'is-invalid': this.formUser.get('cedula')?.errors  && this.formSubmitted  }">
+                </div>
+                <div class="col col-md-2">
+                  <button type="submit" class="btn btn-secondary btn-block"
+                  (click)="buscaPersona()">&nbsp;Buscar&nbsp;&nbsp;</button>
+                </div>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formUser.get('cedula')?.errors?.['required'] && this.formSubmitted">Este campo no puede
+                    estar vacio</span>
+                </div>
+              </div>
+  
+              <div class="form-group row">
+                <div class="col-12 col-md-2">
+                  <input type="text" class="form-control" disabled required="true" placeholder="Grado" value="{{grado}}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <input type="text" class="form-control" disabled required="true" placeholder="Nombres"
+                    value="{{nombres}}">
+                </div>
+                <div class="col-12 col-md-4">
+                  <input type="text" class="form-control" disabled required="true" placeholder="Apellidos"
+                    value="{{apellidos}}">
+                </div>
+                <div class="col col-md-2">
+                  <button type="submit" class="btn btn-primary btn-block"
+                    (click)="createUserSpr()">Guardar</button>
+                </div>
+              </div>
+  
+              <div class="modal-footer">
+                <!--   <button type="button" class="btn btn-warning float-right mr-0" data-dismiss="modal" (click)="closeModal()">Cerrar</button> -->
+              </div>
+            </form>
+  
+            <!-- ##############  Acordion   ##################### -->
+            <div id="accordion" class="mb-3">
+                <div class="card mb-1">
+                    <div class="card-header" id="headingOne">
+                        <h5 class="m-0">
+                            <a class="text-dark" data-bs-toggle="collapse" href="#collapseOne" aria-expanded="true">
+                                <i class="mdi mdi-file me-1 text-primary"></i> 
+                                1.- USUARIO-ROL-AMBIENTE
+                            </a>
+                        </h5>
+                    </div>
+        
+                    <div id="collapseOne" class="collapse" aria-labelledby="headingOne" data-bs-parent="#accordion">
+                        <div class="card-body">
+                            <form [formGroup]="formRolAmbienteUser" autocomplete="off" (ngSubmit)="createAmbienteRolUser()">
+                                <div class="form-group row mb-2">
+                                  <div class="col col-md-2 text-md-right ">
+                                    <label for="nombre" class="col-form-label text-md-right"><b>Rol:</b></label>
+                                  </div>
+                                  <div class="col-12 col-md-8 ">
+                                    <select class="form-select col-9" id="idSprRol" formControlName="idSprRol" required="true"
+                                    [ngClass]="{'is-invalid': this.formUser.get('idSprRol')?.errors  && this.formSubmitted  }">
+                                           <option value=" ">Seleccione</option>
+                                    <option *ngFor="let row of dataRoles" [value]="row.idSprRol">{{row.nombre}}                      
+                                        </option>
+                                        
+                                    </select>
+                                    <div class="col text-danger">
+                                      <span class="font-italic" *ngIf="this.formUser.get('idSprRol')?.errors?.['required'] && this.formSubmitted">El campo rol no puede estar vacio</span>
+                                    </div>
+                                  </div>
+                                </div>
+                                <div class="form-group row mb-2">
+                                  <div class="col col-md-2 text-md-right ">
+                                    <label for="nombre" class="col-form-label text-md-right"><b>Ambiente:</b></label>
+                                  </div>
+                                  <div class="col-12 col-md-8 ">
+                                    <select class="form-select col-9" formControlName="idSprAmbiente" [ngClass]="{'is-invalid': this.formUser.get('idSprAmbiente')?.errors  && this.formSubmitted  }">
+                                      <option value=" ">Seleccione</option>
+                                      <option *ngFor="let row of dataAmbientes" [value]="row.idSprAmbiente">[ {{row.nivel.nombre}} ] - {{row.nombreUnidad}}
+                                        
+                                      </option>
+                                      <div class="col text-danger">
+                                        <span class="font-italic" *ngIf="this.formUser.get('idSprAmbiente')?.errors?.['required'] && this.formSubmitted">El campo ambiente no puede estar vacio</span>
+                                      </div>
+            
+                                    </select>
+            
+                                  </div>
+                                  <div class="col col-md-2">
+                                    <button type="submit" class="btn btn-primary btn-block">Guardar</button>
+                                  </div>
+                                </div>
+                              </form>
+<hr>
+                                              <!-- iNICIO TABLA-->
+                  <div class="table-responsive pt-0">
+                    <table id="dataTable" class="display nowrap table table-hover table-sm table-striped" cellspacing="0"
+                      width="100%">
+                      <thead class="">
+                        <tr>
+                          <th>Nro.</th>
+                          <th>Rol</th>
+                          <th>Unidad</th>
+                          <th>Acciones</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr *ngFor="let row of dataAmbientesRoles;let indice=index">
+                          <td>{{indice+1}}</td>
+                          <td>{{row.nombreRol}}</td>
+                          <td>[{{row.nivel}}] {{row.nombreUnidad}}</td>
+  
+                          <td class="text-center">
+                            <a data-toggle="tooltip" class="text-primary" data-original-title="Eliminar" (click)="deleteUserRol(row.idSprAmbRolUsuario)">
+                              <i class="fas fa-trash-alt fa-lg"></i></a>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div> <!-- end #accordions-->
+           
+  
+          </div> <!--  Fin acordion-->
+
+        </div>
+        </div>
+      </div> 
+           
+      <jw-modal id="delete-user-rol">
+        <div class="modal-dialog" style="padding-top:15%">
+            <div class="modal-content" >
+                <div class="modal-header">
+                    <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+                    <button type="button" class="btn-close"  (click)="modal.closeId('delete-user-rol');"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp; &nbsp;  Esta seguro que desea eliminar este registro? </p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary waves-effect" 
+                        (click)="modal.closeId('delete-user-rol');">Cancelar</button>
+                    <button type="button" class="btn btn-primary" (click)="confirmDeleteUSerRolAmbiente()"
+                        >Si, borrar!</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal-dialog -->
+</jw-modal>
+
+</jw-modal>

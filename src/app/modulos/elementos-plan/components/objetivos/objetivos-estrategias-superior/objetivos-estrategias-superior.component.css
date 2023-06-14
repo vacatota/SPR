@@ -1,0 +1,37 @@
+.mostrar{
+    background-color: rgb(0,0,0,0.4);
+    left: 0px;
+    height: 100%;
+    position: fixed;
+    top: 0px;
+    width: 100%;
+    z-index: 9999;
+    display: block;
+  }
+  
+  .modal-xl{
+    max-width: 1000px;
+  
+  }
+  
+  .modal-xxl{
+    max-width: 1500px;
+  
+  }
+  
+  .text-justify{
+    text-align: justify;
+  }
+  
+  .size{
+    width: 50px;
+  }
+  
+  .h4 {
+    background-color: rgba(26, 91, 165, 0.4);
+    color: #080b29;
+    font-weight: normal;
+    font-size: 18px;
+    font-family: Gregoria;
+    text-transform: uppercase;
+  }

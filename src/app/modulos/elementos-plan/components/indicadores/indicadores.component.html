@@ -1,0 +1,82 @@
+<app-pagetitle title="{{nameApp}}" [breadcrumbItems]="breadCrumbItems"></app-pagetitle>
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-4">{{nameApp}}</h4>
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                       <a href="#objetivo" data-bs-toggle="tab" aria-expanded="false" class="nav-link active " (click)="openObjetivos()">
+                            Objetivos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#linea-accion" data-bs-toggle="tab" aria-expanded="true" class="nav-link " (click)="openLineasAccion()">
+                            Líneas de acción
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#planes-accion" data-bs-toggle="tab" aria-expanded="true" class="nav-link " (click)="openPlanesAccion()">
+                           Planes de acción
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#proyectos" data-bs-toggle="tab" aria-expanded="false" class="nav-link " (click)="openProyectos()">
+                            Proyectos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#procesos" data-bs-toggle="tab" aria-expanded="true" class="nav-link " (click)="openProcesos()">
+                            Procesos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#vision" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                            Visión
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+
+                    <div class="tab-pane show active " id="objetivo">
+                       <!-- ############################### OBJETIVOS ##################################### -->
+                      <app-indicadores-objetivos [init]="objetivo"></app-indicadores-objetivos>                               
+                       <!-- ################################## FIN OBJETIVOS ############################## -->
+                    </div> 
+
+                    <div class="tab-pane " id="linea-accion">
+                        <!--###################    LINEAS DE ACCION   ########################################-->
+                        <app-indicadores-linea-accion [init2]="lineAction"></app-indicadores-linea-accion>
+                        <!--###################   FIN LINEAS DE ACCION   #####################################-->
+                    </div>
+
+                   <div class="tab-pane  " id="planes-accion">
+                        <app-indicadores-plan-accion [init3]="planAccion"></app-indicadores-plan-accion>
+                    </div>
+
+                    <div class="tab-pane  " id="proyectos">
+                       <!-- ####################### PROYECTOS  ############################################# -->
+                       <app-indicadores-proyectos [init]="proyecto"></app-indicadores-proyectos>                
+                       <!-- ####################### FIN  PROYECTOS  ######################################## -->
+                    </div>
+
+                    <div class="tab-pane  " id="procesos">
+                       <!-- ########################### PROCESOS ########################################### -->              
+                       <app-indicadores-procesos [init]="proceso" ></app-indicadores-procesos>                                
+                       <!-- ########################### FIN PROCESOS ####################################### -->
+                    </div>
+                    <div class="tab-pane" id="vision">
+                        <p>Visión</p>
+                    </div>
+
+                </div>
+            </div>
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+<!-- end row -->
+
+<!-- ############################################################################################################# -->
+<!-- ######################################    MODALES       ##################################################### -->
+<!-- ############################################################################################################# -->
+

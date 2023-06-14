@@ -1,0 +1,253 @@
+      <div class="row">
+        <div class="col-sm-12">
+          <div class="card card-border">
+            <div class="card-header">
+              <div class="row">
+                <div class="col-sm-6 text-sm-right">
+                  <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                    class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+                </div>
+              </div>
+            </div>
+    
+
+      <!-- TABLA -->
+
+      <div class="container card-body table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+          class="table table-striped table-bordered row-border hover">
+          <thead>
+            <tr>
+              <th>Nro.</th>
+              <th>Actividad</th>
+              <th>Fecha Inicio</th>
+              <th>Fecha Cumplimiento</th>
+              <th>peso</th>
+              <th>cumplimiento</th>
+              <th>respaldo</th>
+              <th>estado</th>
+              <th>Detalle</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+
+
+            <tr *ngFor="let subSistem of listaActividadesN5; let indice=index">
+              <!-- <td>{{subSistem.idSprActividad}}</td> -->
+              <td>{{indice+1}} </td>
+              <td>{{subSistem.nombre}}</td>
+              <td>{{subSistem.fechaInicio}}</td>
+              <td>{{subSistem.fechaCumplimiento}}</td>
+              <td>{{subSistem.peso}}</td>
+              <td>{{((subSistem.cumplimiento == '1')? 'SI': 'NO')}}</td>
+              <td>{{subSistem.respaldo}}</td>
+              <td>{{((subSistem.estado == '1')? 'Activo': 'Inactivo')}}</td>
+              <td class="text-center">
+                <a data-toggle="tooltip" data-original-title="Ver Detalles">
+                  <i class="fa fa-file-text-o text-primary m-r-10 fa-2x" abbr title="Ingrese Actividades"></i></a>
+
+              </td>
+              <td class="text-center col-sm-auto">
+                <button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Seleccionar este registro" (click)="updateActividades(subSistem)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link waves-effect" title="Eliminar este registro"
+                  (click)="deleteActividades(subSistem.idSprActividad)">
+                  <i class="fas fa-trash-alt fa-lg"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- TABLA FIN -->
+
+
+
+
+      <!-- MENSAJE DE ELIMINAR -->
+      <jw-modal id="deleteActivities">
+        <div class="modal-dialog" style="padding-top:15%">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+              <button type="button" class="btn-close" (click)="modal.close()"></button>
+            </div>
+            <div class="modal-body">
+              <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp;
+                &nbsp; Esta seguro que desea eliminar este registro? </p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary waves-effect"
+                (click)="closeModalEliminar();">Cancelar</button>
+              <button type="button" class="btn btn-primary" (click)="confirmDelete()">Si,
+                borrar!</button>
+            </div>
+          </div>
+        </div>
+
+      </jw-modal>
+
+      <!-- MENSAJE DE ELIMINAR FIN -->
+
+
+
+      <!-- MODAL PARA CREAR Y EDITAR -->
+      <jw-modal id="{{nameModal}}">
+        <div class="modal-dialog modal-lg " style="margin-top: 120px;"role="document">
+          <div class="modal-content">
+
+            <div class="modal-header">
+
+              <h3 class="modal-title">{{nameActivadades}}</h3>
+              <button type="button" class="btn-close" (click)="closeModalFooter()" aria-label="Close"></button>
+            </div>
+            <div class="card mb-1">
+              <div class="card-body px-5">
+
+                <form class="needs-validation was-validated" novalidate id="formPlanAccion" id="formActividadesPlanN5"
+                  [formGroup]="formActividadesPlanN5" autocomplete="off" (ngSubmit)="createActividadesPlanaccionN5()">
+
+                  <div class="form-floating mb-3">
+
+
+                    <input type="hidden" id="nombre" formControlName="nombre" requiered class="is-invalid">
+                    <input type="text" class="form-control form-control-sm" required="true" style="height: 55px;"
+                      formControlName="nombre" maxlength="150" oninput="this.value = this.value.toUpperCase();"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('nombre')?.errors  && this.formSubmitted  }">
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('nombre')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Actividad</label>
+
+
+                  </div>
+
+
+
+
+                  <div class="form-floating mb-3">
+
+
+                    <input type="date" class="form-control" required="true" style="height: 55px;"
+                      placeholder="Ingrese fecha cuando Iniciará la Actividad" formControlName="fechaInicio"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('fechaInicio')?.errors  && this.formSubmitted  }">
+
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Fecha Inicio</label>
+                  </div>
+
+
+                  <div class="form-floating mb-3">
+
+
+
+                    <input type="date" class="form-control" required="true" style="height: 55px;"
+                      placeholder="Ingrese fecha cuando se preveé dar Cumplimiento" formControlName="fechaCumplimiento"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('fechaCumplimiento')?.errors  && this.formSubmitted  }">
+
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('fechaCumplimiento')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Fecha Fin</label>
+                  </div>
+
+
+                  <div class="form-floating mb-3">
+
+
+                    <input type="hidden" id="peso" formControlName="peso" requiered class="is-invalid">
+                    <input type="number" min="0" max="100" onkeydown="return false" style="height: 55px;"
+                      onkeypress="return (event.charCode >= 48 && event.charCode <= 57)" class="form-control"
+                      required="true" formControlName="peso" maxlength="50"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('peso')?.errors  && this.formSubmitted  }">
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('peso')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Peso de la Activida</label>
+
+                  </div>
+
+
+
+                  <div class="form-floating mb-3">
+
+
+
+                    <select class="form-select form-control-sm" id="cumplimiento" formControlName="cumplimiento"
+                      style="height: 55px;" required="true"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('cumplimiento')?.errors  && this.formSubmitted  }">
+                      <option value="1" selected>SI</option>
+                      <option value="2">NO</option>
+                    </select>
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('cumplimiento')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Cumplimiento</label>
+                  </div>
+
+
+
+
+                  <div class="form-floating mb-3">
+
+
+                    <input type="hidden" id="respaldo" formControlName="respaldo" requiered class="is-invalid">
+                    <input type="text" class="form-control form-control-sm" required="true" 
+                      style="height: 55px;" formControlName="respaldo" min="0"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('respaldo')?.errors  && this.formSubmitted  }">
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('respaldo')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Respaldo</label>
+                  </div>
+
+
+
+                  <div class="form-floating mb-3">
+
+                    <select class="form-select form-control-sm" id="estado" formControlName="estado" required="true"
+                      style="height: 55px;"
+                      [ngClass]="{'is-invalid': this.formActividadesPlanN5.get('estado')?.errors  && this.formSubmitted  }">
+                      <option value="1" selected>Activo</option>
+                      <option value="2">Inactivo</option>
+                    </select>
+
+                    <small class="font-italic"
+                      *ngIf="this.formActividadesPlanN5.get('estado')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</small>
+                    <label>Estado</label>
+
+                  </div>
+
+                  <div class="modal-footer" id="modal">
+                    <button type="submit" class="btn btn-info">Guardar</button>
+                    <button type="button" class="btn btn-secondary waves-effect" data-dismiss="modal"
+                      (click)="closeModalFooter()">Cerrar</button>
+
+
+                  </div>
+
+                </form>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+
+
+      </jw-modal>

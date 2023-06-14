@@ -1,0 +1,4 @@
+.form-control.no-border-red:focus {
+    border-color: #ced4da;
+    box-shadow: none;
+  }

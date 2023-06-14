@@ -1,0 +1,441 @@
+
+<div class="row">
+  <div class="col-sm-12">
+      <div class="card card-border">
+          <div class="card-header">
+              <div class="row">
+                  <div class="col-sm-6 text-sm-right">
+                      <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                          class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+                        </div>
+                      </div>
+                  </div>
+
+              <div class="container card-body table-responsive">
+                  <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger" class="table table-striped table-bordered row-border hover">
+                  <thead>
+              <tr>
+                <th>Nro.</th>
+                <th>Información Formula</th>
+                <th>Fecha Inicio</th>
+                 <th>Estado</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+
+            <tbody>
+              <tr *ngFor="let row of dataConfiguracionIndicadores;let indice=index">
+                <td>{{indice+1}}</td>
+                <td>{{row.informacionFormula}}</td>
+                <td>{{row.fechaInicio}}</td>
+                <td>{{((row.estado == '1')? 'Activo': 'Inactivo')}}</td>
+                <td class="text-center col-sm-auto">
+                  <button type="button" tooltip="Editar"
+                  class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Editar este registro" (click)="edit(row)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+          </button>
+          <button type="button" class="btn btn-sm btn-link waves-effect"
+          title="Eliminar este registro"
+          (click)="delete(row.idSprConfigIndicador)">
+              <i class="fas fa-trash-alt fa-lg"></i>
+          </button>
+      </td>
+  </tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+
+<jw-modal id="delete">
+  <div class="modal-dialog" style="padding-top:15%">
+      <div class="modal-content" >
+          <div class="modal-header">
+              <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+              <button type="button" class="btn-close"  (click)="modal.close()"></button>
+          </div>
+          <div class="modal-body">
+              <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp; &nbsp;  Esta seguro que desea eliminar este registro? </p>
+          </div>
+          <div class="modal-footer">
+              <button type="button" class="btn btn-secondary waves-effect"
+                  (click)="modal.close();">Cerrar</button>
+              <button type="button" class="btn btn-primary" (click)="confirmDelete()"
+                  >Si, borrar!</button>
+          </div>
+      </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</jw-modal>
+
+<jw-modal id="{{nameModal}}">
+
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%">
+      <div class="modal-content">
+          <div class="modal-header pb-3">
+              <h3 class="modal-title">{{nameApp}}</h3>
+              <button type="button" class="btn-close" (click)="modal.close();"
+      aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body px-5">
+          <form action="#" [formGroup]="formConfiguracionIndicadores" class="needs-validation was-validated form">
+
+              <div class="form-group row mb-2">
+                <div class="col col-md-2 text-md-right">
+                  <label for="idSprUmbral" class=" form-control-label text-md-right pt-1"><b>Umbrales:</b></label>
+                </div>
+                <div class="col-12 col-md-10">
+                  <select class="form-select col-9" formControlName="idSprUmbral" required="true"
+                    [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprUmbral')?.errors  && this.formSubmitted  }">
+                       <option *ngFor="let catUmbrales of dataUmbrales" value={{catUmbrales.idSprUmbral}}> {{catUmbrales.nombre}}
+                    </option>
+                  </select>
+                  <div class="col text-danger">
+                    <span class="font-italic"
+                      *ngIf="this.formConfiguracionIndicadores.get('idSprUmbral')?.errors?.['required'] && this.formSubmitted">El
+                      campo rol no puede estar vacio</span>
+                  </div>
+                </div>
+              </div>
+
+
+
+                <div class="form-group row mb-2">
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprUnidadMedida" class=" form-control-label text-md-right pt-1"><b>Unidad Medida:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-12" id="idSprUnidadMedida" formControlName="idSprUnidadMedida" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprUnidadMedida')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let catUnidadMedida of dataUnidadMedida" value={{catUnidadMedida.idSprEspecialDos}}>
+                    {{catUnidadMedida.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprUnidadMedida')?.errors?.['required'] && this.formSubmitted">El campo nivel
+                    no puede estar vacio</span>
+                </div>
+              </div>
+
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprTipoIndicador" class=" form-control-label text-md-right pt-1"><b>Tipo Indicadores:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-9" formControlName="idSprTipoIndicador" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprTipoIndicador')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let catTipoIndicador of dataTipoIndicador" value={{catTipoIndicador.idSprEspecialUno}}>
+                    {{catTipoIndicador.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprTipoIndicador')?.errors?.['required'] && this.formSubmitted">El campo nivel
+                    no puede estar vacio</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-group row mb-2">
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprJerarquia" class=" form-control-label text-md-right pt-1"><b>Jerarquia</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-12" id="idSprJerarquia" formControlName="idSprJerarquia" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprJerarquia')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let tipo of dataJerarquia" value={{tipo.idSprEspecialUno}}>
+                    {{tipo.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprJerarquia')?.errors?.['required'] && this.formSubmitted">El campo nivel
+                    no puede estar vacio</span>
+                </div>
+              </div>
+
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprExpresion" class=" form-control-label text-md-right pt-1"><b>Expresion:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-9" formControlName="idSprExpresion" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprExpresion')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let catExpresion of dataExpresion" value={{catExpresion.idSprComun}}>
+                    {{catExpresion.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprExpresion')?.errors?.['required'] && this.formSubmitted">El campo nivel
+                    no puede estar vacio</span>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form-group row mb-2">
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprComportamiento" class=" form-control-label text-md-right pt-1"><b>Comportamiento:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-9" formControlName="idSprComportamiento" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprComportamiento')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let catComportamiento of dataComportamiento" value={{catComportamiento.idSprComun}}>
+                    {{catComportamiento.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprComportamiento')?.errors?.['required'] && this.formSubmitted">El campo frecuencia
+                    no puede estar vacio</span>
+                </div>
+              </div>
+
+              <div class="col col-md-2 text-md-right">
+                <label for="idSprFrecuencia" class=" form-control-label text-md-right pt-1"><b>Frecuencia:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                <select class="form-select col-9" formControlName="idSprFrecuencia" required="true"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('idSprFrecuencia')?.errors  && this.formSubmitted  }">
+
+                  <option *ngFor="let catFrecuencia of dataFrecuencia" value={{catFrecuencia.idSprComun}}>
+                    {{catFrecuencia.nombre}}
+                  </option>
+                </select>
+                <div class="col text-danger">
+                  <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('idSprFrecuencia')?.errors?.['required'] && this.formSubmitted">El campo frecuencia
+                    no puede estar vacio</span>
+                </div>
+              </div>
+            </div>
+
+
+
+
+            <div class="form-group row mb-2">
+              <div class="col col-md-2 text-md-right">
+                  <label for="fechaInicio" class=" form-control-label text-md-right pt-1"><b>Fecha Inicio:</b></label>
+              </div>
+              <div class="col-12 col-md-4">
+                  <input type="date" class="form-control" required="true" placeholder="fechaInicio" formControlName="fechaInicio"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('fechaInicio')?.errors  && this.formSubmitted  }" date>
+                  <div class="col text-danger">
+                    <span class="font-italic" *ngIf="this.formConfiguracionIndicadores.get('fechaInicio')?.errors?.['required'] && this.formSubmitted">El campo fecha no puede estar vacio</span>
+                  </div>
+              </div>
+
+            <div class="col col-md-2 text-md-right">
+                <label for="fechaFin" class=" form-control-label text-md-right pt-1"><b>Linea Base:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+                  class="is-invalid">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+                  required="true" placeholder="año anterior" onkeypress="return
+                  (event.charCode>= 48 && event.charCode <= 57)" formControlName="lineaBase" oninput="this.value = this.value.toUpperCase();"
+                  [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('lineaBase')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                  <span class="font-italic"
+                      *ngIf="this.formConfiguracionIndicadores.get('lineaBase')?.errors?.['required'] && this.formSubmitted">Este
+                      campo no puede estar vacio</span>
+              </div>
+          </div>
+        </div>
+
+
+        <div class="form-group row mb-2">
+          <div class="col col-md-2 text-md-right">
+              <label for="informacionFormula" class=" form-control-label text-md-right pt-1"><b>Informacion Formula:</b></label>
+          </div>
+          <div class="col-12 col-md-4">
+            <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+                class="is-invalid">
+            <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;"
+                required="true" placeholder="informacion formula" formControlName="informacionFormula" oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('informacionFormula')?.errors  && this.formSubmitted  }">
+            <div class="col text-danger">
+                <span class="font-italic"
+                    *ngIf="this.formConfiguracionIndicadores.get('informacionFormula')?.errors?.['required'] && this.formSubmitted">Este
+                    campo no puede estar vacio</span>
+            </div>
+        </div>
+
+        <div class="col col-md-2 text-md-right">
+            <label for="metaPeriodo" class=" form-control-label text-md-right pt-1"><b>Meta Periodo:</b></label>
+        </div>
+        <div class="col-12 col-md-4">
+          <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+              class="is-invalid">
+          <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+              required="true" placeholder="N° meta periodo" onkeypress="return
+              (event.charCode>= 48 && event.charCode <= 57)" formControlName="metaPeriodo" oninput="this.value = this.value.toUpperCase();"
+              [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('metaPeriodo')?.errors  && this.formSubmitted  }">
+          <div class="col text-danger">
+              <span class="font-italic"
+                  *ngIf="this.formConfiguracionIndicadores.get('metaPeriodo')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+          </div>
+      </div>
+    </div>
+
+
+    <div class="form-group row mb-2">
+      <div class="col col-md-2 text-md-right">
+          <label for="numerador" class=" form-control-label text-md-right pt-1"><b>Numerador:</b></label>
+      </div>
+      <div class="col-12 col-md-4">
+        <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+            class="is-invalid">
+        <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+            required="true" placeholder="resultado" onkeypress="return
+            (event.charCode>= 48 && event.charCode <= 57)" formControlName="numerador" oninput="this.value = this.value.toUpperCase();"
+            [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('numerador')?.errors  && this.formSubmitted  }">
+        <div class="col text-danger">
+            <span class="font-italic"
+                *ngIf="this.formConfiguracionIndicadores.get('numerador')?.errors?.['required'] && this.formSubmitted">Este
+                campo no puede estar vacio</span>
+        </div>
+    </div>
+
+    <div class="col col-md-2 text-md-right">
+        <label for="denominador" class=" form-control-label text-md-right pt-1"><b>Denominador:</b></label>
+    </div>
+    <div class="col-12 col-md-4">
+      <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+          class="is-invalid">
+      <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+          required="true" placeholder="resultado" onkeypress="return
+          (event.charCode>= 48 && event.charCode <= 57)" formControlName="denominador" oninput="this.value = this.value.toUpperCase();"
+          [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('denominador')?.errors  && this.formSubmitted  }">
+      <div class="col text-danger">
+          <span class="font-italic"
+              *ngIf="this.formConfiguracionIndicadores.get('denominador')?.errors?.['required'] && this.formSubmitted">Este
+              campo no puede estar vacio</span>
+      </div>
+  </div>
+</div>
+
+
+<div class="form-group row mb-2">
+  <div class="col col-md-2 text-md-right">
+      <label for="respaldoPdf" class=" form-control-label text-md-right pt-1"><b>Respaldo PDF:</b></label>
+  </div>
+  <div class="col-12 col-md-4">
+    <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+        class="is-invalid">
+    <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;"
+        required="true" placeholder="archivo pdf" formControlName="respaldoPdf" oninput="this.value = this.value.toUpperCase();"
+        [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('respaldoPdf')?.errors  && this.formSubmitted  }">
+    <div class="col text-danger">
+        <span class="font-italic"
+            *ngIf="this.formConfiguracionIndicadores.get('respaldoPdf')?.errors?.['required'] && this.formSubmitted">Este
+            campo no puede estar vacio</span>
+    </div>
+</div>
+
+<div class="col col-md-2 text-md-right">
+    <label for="comentario" class=" form-control-label text-md-right pt-1"><b>Comentario:</b></label>
+</div>
+<div class="col-12 col-md-4">
+  <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+      class="is-invalid">
+  <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;"
+      required="true" placeholder="comentario" formControlName="comentario" oninput="this.value = this.value.toUpperCase();"
+      [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('comentario')?.errors  && this.formSubmitted  }">
+  <div class="col text-danger">
+      <span class="font-italic"
+          *ngIf="this.formConfiguracionIndicadores.get('comentario')?.errors?.['required'] && this.formSubmitted">Este
+          campo no puede estar vacio</span>
+  </div>
+</div>
+</div>
+
+
+<div class="form-group row mb-2">
+  <div class="col col-md-2 text-md-right">
+      <label for="mayorIgual" class=" form-control-label text-md-right pt-1"><b>Mayor o igual que:</b></label>
+  </div>
+  <div class="col-12 col-md-4">
+    <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+        class="is-invalid">
+    <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+        required="true" placeholder="resultado" onkeypress="return
+        (event.charCode>= 48 && event.charCode <= 57)" formControlName="mayorIgual" oninput="this.value = this.value.toUpperCase();"
+        [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('mayorIgual')?.errors  && this.formSubmitted  }">
+    <div class="col text-danger">
+        <span class="font-italic"
+            *ngIf="this.formConfiguracionIndicadores.get('mayorIgual')?.errors?.['required'] && this.formSubmitted">Este
+            campo no puede estar vacio</span>
+    </div>
+</div>
+
+<div class="col col-md-2 text-md-right">
+    <label for="menorIgual" class=" form-control-label text-md-right pt-1"><b>Menor o igual que:</b></label>
+</div>
+<div class="col-12 col-md-4">
+  <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+      class="is-invalid">
+  <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+      required="true" placeholder="resultado" onkeypress="return
+      (event.charCode>= 48 && event.charCode <= 57)" formControlName="menorIgual" oninput="this.value = this.value.toUpperCase();"
+      [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('menorIgual')?.errors  && this.formSubmitted  }">
+  <div class="col text-danger">
+      <span class="font-italic"
+          *ngIf="this.formConfiguracionIndicadores.get('menorIgual')?.errors?.['required'] && this.formSubmitted">Este
+          campo no puede estar vacio</span>
+  </div>
+</div>
+</div>
+
+<div class="form-group row mb-2">
+  <div class="col col-md-2 text-md-right">
+      <label for="rangoIntermedio" class=" form-control-label text-md-right pt-1"><b>Entre:</b></label>
+  </div>
+  <div class="col-12 col-md-4">
+    <input type="hidden" id="idSprConfigIndicador" formControlName="idSprConfigIndicador" requiered
+        class="is-invalid">
+    <input type="number" maxlength="50" min="0" max="100" class="form-control" style="text-transform:uppercase;"
+        required="true" placeholder="resultado" onkeypress="return
+        (event.charCode>= 48 && event.charCode <= 57)" formControlName="rangoIntermedio" oninput="this.value = this.value.toUpperCase();"
+        [ngClass]="{'is-invalid': this.formConfiguracionIndicadores.get('rangoIntermedio')?.errors  && this.formSubmitted  }">
+    <div class="col text-danger">
+        <span class="font-italic"
+            *ngIf="this.formConfiguracionIndicadores.get('rangoIntermedio')?.errors?.['required'] && this.formSubmitted">Este
+            campo no puede estar vacio</span>
+    </div>
+  </div>
+
+<div class="col col-md-2 text-md-right">
+  <label for="estado" class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+</div>
+<div class="col-12 col-md-4">
+  <select id="estado" class="form-select" formControlName="estado" required>
+      <option [value]="item.value" *ngFor="let item of selectItems">{{item.label}}
+      </option>
+  </select>
+  <small class="invalid-feedback" *ngIf="formSubmitted && procesoForm['estado'].errors">Campo
+      requerido.</small>
+</div>
+</div>
+
+  </form>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-secondary waves-effect"
+      (click)="modal.close();">Cerrar</button>
+  <button type="button" class="btn btn-info" (click)="onSubmit()"
+      >Guardar</button>
+</div>
+</div>
+</div>
+</jw-modal>
+
+

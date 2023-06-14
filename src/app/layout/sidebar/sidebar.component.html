@@ -1,0 +1,44 @@
+<!-- ========== Left Sidebar Start ========== -->
+<div class="left-side-menu" >
+    <div class="h-100" data-simplebar>
+        <!--- Sidemenu -->
+        <div id="sidebar-menu">
+            <ul id="side-menu">
+                <ng-container *ngFor="let menu of menus">
+                    <li class="menu-title mt-2">{{menu.label}}</li>
+                    <ng-container *ngFor="let item of menu.items">
+                        <li *ngIf="!item.items">
+                            <a routerLink="{{item.routerLink}}" data-bs-toggle="collapse">
+                                <i class="{{item.icon}}"></i>
+                                <span>{{item.label}}</span>
+                            </a>
+                        </li>
+                        <li *ngIf="item.items">
+                            <a href="#sidebar{{item.name}}" data-bs-toggle="collapse">
+                                <i class="{{item.icon}}"></i>
+                                <span>{{item.label}}</span>
+                                <span class="menu-arrow"></span>
+                            </a>
+                            <div class="collapse" id="sidebar{{item.name}}">
+                                <ul class="nav-second-level">
+                                    <ng-container *ngFor="let subitem of item.items">
+                                    <li>
+                                        <a routerLink="{{subitem.routerLink}}" data-bs-toggle="collapse">
+                                            <i class="{{subitem.icon}}"></i>
+                                            <span>{{subitem.label}}</span>
+                                        </a>
+                                    </li>
+                                </ng-container>
+                                </ul>
+                            </div>
+                        </li>
+                    </ng-container>
+                </ng-container>
+            </ul>
+        </div>
+        <!-- End Sidebar -->
+        <div class="clearfix"></div>
+    </div>
+    <!-- Sidebar -left -->
+</div>
+<!-- Left Sidebar End -->

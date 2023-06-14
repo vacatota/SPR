@@ -1,0 +1,22 @@
+export interface Proyecto{     
+      idSprProyecto?:number,
+      idSprObjetivo?: number,
+      idSprEstrategia?: number,
+      idSprTipoCliente?: number,
+      idSprTipoProyecto?: number,
+      idSprAmbiente?: number,
+      idSprViabilidadTecnica?: number,
+      idSprUsuario?: number,
+      idSprArea?: number,
+      nombreProyecto?: string,
+      descripcion?: string,
+      fechaInicio?: Date,
+      fechaFin?: Date,
+      beneficiosCualitativos?: string,
+      restricciones?: string,
+      numContratoPrincipal?: string,
+      fechaFirma?: Date,
+      estado?: number,
+      nameObjetivo?: string,
+}
+

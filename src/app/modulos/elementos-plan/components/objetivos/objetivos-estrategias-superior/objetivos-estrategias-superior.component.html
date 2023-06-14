@@ -1,0 +1,35 @@
+<div class="container card-body table-responsive">
+    
+    <form id="formObjetivosView" [formGroup]="formEstrategia" autocomplete="off">
+        <table class="table  table-bordered row-border hover" >
+            <ng-container *ngFor="let row of dataObjetivoMain; index as indice"
+                style="width: 100%">
+                <thead class="table-secondary">
+                    <tr>
+                        <td colspan="2">{{row.nombre}} </td>
+                    </tr>
+                </thead>
+                <ng-container *ngFor="let fila of row.estrategias; index as i" style="width: 100%">
+                    <tbody >
+                        <tr *ngIf="fila.idSprEstrategia != null">
+                            <td class="size">{{i+1}} </td>
+                            <td colspan="4" class="checkbox">
+                                <input type="checkbox" class="form-check-input"
+                                    (change)="onChangeEstrategia($event)" id={{fila.idSprEstrategia}}
+                                    name="option1{{indice}}" value={{fila.idSprEstrategia}}>
+                                    
+                                <label for={{fila.idSprEstrategia}} class="form-check-label">
+                                    {{fila.nombre}}
+                                </label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </ng-container>
+            </ng-container>
+        </table>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect" >Editar</button>
+            <button type="button" class="btn btn-info" (click)="onSubmitEstrategia()">Guardar</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,268 @@
+<div class="row">
+    <div class="col-sm-12">
+        <div class="card card-border">
+            <div class="container card-body table-responsive">
+                <!-- Acordions Objetivos -->
+                <div class="row">
+                    <div class="col-md-12">
+                        <div id="accordion custom-accordion" class="mb-3">
+                            <div class="card mb-1" *ngFor="let row of dataObjetivoIndicadores; let indiceUno=index">
+                                <div class="card-header py-0" id="headingNine">                                    
+                                    <h5 class="m-0 ">
+                                        <a class="custom-accordion-title text-reset d-block py-2" aria-expanded="true" data-bs-toggle="collapse" href="#id_{{indiceUno + 1}}" >
+                                           
+                                           <span> {{row.nombre}} </span>
+                                           <span class="menu-arrow"></span>
+                                        </a>
+                                    </h5>
+                                </div>
+
+                                <div id="id_{{indiceUno + 1}}" class="collapse" aria-labelledby='abcd' data-bs-parent="#accordion">
+                                    <div class="card-body">
+
+                                        <div class="row">
+                                            <div class="col-sm-6 text-sm-right">
+                                                <button type="button" class="btn btn-sm btn-success waves-effect pl-4" (click)="openModal(row)"><i
+                                                        class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+                                            </div>
+                                        </div>
+
+                                        <div class="container card-body table-responsive pt-2">
+                                            <table class="table table-striped table-bordered row-border hover">
+                                               <thead>
+                                                   <tr>
+                                                    <th>Nro.</th>
+                                                    <th>Nombre</th>
+                                                    <th>Unidad que genera información</th>
+                                                    <th>Fecha inicio</th>
+                                                    <th>Configuracion</th>
+                                                    <th>Editar</th>
+                                                    <th>Borrar</th>
+                                                   </tr>
+                                               </thead>
+                                               <tbody>
+                                                   <tr *ngFor="let row of dataObjetivoIndicadores[indiceUno].indicadores; let indice=index">
+                                                    <td>{{indice+1}}</td>
+                                                    <td>{{row.nombre}}</td>
+                                                   <td>{{row.unidadInformacion}}</td>
+                                                   <td>{{row.fechaInicio}}</td>
+                                                   <td>    <button type="button" tooltip="Editar"
+                                                    class="btn btn-sm btn-link waves-effect rounded-pill"
+                                                         title="Configurar este indicador"
+                                                         (click)="configuracionInit(row)">
+                                                         <i class="fas fa-chart-line fa-lg"></i>
+                                                     </button></td>
+                                                       <td>    <button type="button" tooltip="Editar"
+                                                       class="btn btn-sm btn-link waves-effect rounded-pill"
+                                                            title="Configurar este indicador"
+                                                            (click)="edit(row)">
+                                                            <i class="fas fa-pencil-alt fa-lg"></i>
+                                                        </button></td>
+                                                       <td class="text-center col-sm-auto">
+                                                           <div class="row">
+                                                           <!-- <button type="button" tooltip="Editar"
+                                                          class="btn btn-sm btn-link waves-effect rounded-pill"
+                                                               title="Editar este registro"
+                                                               (click)="edit(row)">
+                                                               <i class="fas fa-cog fa-lg"></i>
+                                                           </button> -->
+
+                                                           <button type="button" class="btn btn-sm btn-link waves-effect"
+                                                           title="Eliminar este registro"
+                                                           (click)="delete(row)">
+                                                               <i class="fas fa-trash-alt fa-lg"></i>
+                                                           </button>
+                                                       </div>
+                                                       </td>
+                                                   </tr>
+                                               </tbody>
+                                           </table>
+                                       </div>
+
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                   </div>
+
+               </div>
+
+           </div>
+       </div>
+   </div>
+</div>
+
+ <!-- MODAL PARA LA CONFIRMACION DEL BORRADO -->
+  <jw-modal id="delete-objetivo" [isDelete]="true" (confirmation)="confirmDelete()"></jw-modal>
+
+
+<!-- ############################################################################################################# -->
+<!-- ######################################    MODALES       ##################################################### -->
+<!-- ############################################################################################################# -->
+
+<jw-modal id="{{nameModal}}">
+   <!-- MODAL PARA CREAR Y EDITAR -->
+       <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%">
+           <div class="modal-content">
+               <div class="modal-header pb-3">
+                   <h3 class="modal-title">{{nameApp}}</h3>
+                   <button type="button" class="btn-close" (click)="modal.close();"
+                       aria-label="Close"></button>
+               </div>
+               <div class="modal-body pT-4">
+                   <form action="#" [formGroup]="formObjetivoIndicadores" class="needs-validation was-validated">
+                       <div class="row">
+
+
+
+
+                  <div class="form-group row mb-2">
+                      <div class="col col-md-2 text-md-right">
+                          <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+                      </div>
+                      <div class="col-12 col-md-10">
+                          <input type="hidden" id="idSprIndicador" formControlName="idSprIndicador" requiered
+                              class="is-invalid">
+                          <input type="text" maxlength="150" class="form-control" style="text-transform:uppercase;"
+                              required="true" placeholder="Nombre" formControlName="nombre" oninput="this.value = this.value.toUpperCase();"
+                              [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('nombre')?.errors  && this.submitted  }">
+                          <div class="col text-danger">
+                              <span class="font-italic"
+                                  *ngIf="this.formObjetivoIndicadores.get('nombre')?.errors?.['required'] && this.submitted">Este
+                                  campo no puede estar vacio</span>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div class="form-group row mb-2">
+                    <div class="col col-md-2 text-md-right">
+                        <label for="descripcion"
+                            class=" form-control-label text-md-right pt-1"><b>Descripción:</b></label>
+                    </div>
+                    <div class="col-12 col-md-10">
+                        <textarea class="form-control" maxlength="500" id="descripcion" placeholder="Descripcion"
+                            formControlName="descripcion"
+                            [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('descripcion')?.errors  && this.submitted  }">
+                            </textarea>
+                        <div class="col text-danger">
+                            </div>
+                    </div>
+                </div>
+
+                <div class="form-group row mb-2">
+                  <div class="col col-md-2 text-md-right">
+                      <label for="unidadInformacion"
+                          class=" form-control-label text-md-right pt-1"><b>Unidad Información:</b></label>
+                  </div>
+                  <div class="col-12 col-md-10">
+                      <textarea class="form-control"  maxlength="250"id="unidadInformacion" placeholder="Unidad de informacion"
+                          formControlName="unidadInformacion"
+                          [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('unidadInformacion')?.errors  && this.submitted  }">
+                          </textarea>
+                      <div class="col text-danger">
+                      </div>
+                  </div>
+              </div>
+
+              <div class="form-group row mb-2">
+                <div class="col col-md-2 text-md-right">
+                  <label for="idSprEquipoGerencial" class=" form-control-label text-md-right pt-1"><b>Responsable:</b></label>
+                </div>
+                <div class="col-12 col-md-10">
+                  <select class="form-select col-9" id="idSprEquipoGerencial" formControlName="idSprEquipoGerencial" required="true"
+                    [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('idSprEquipoGerencial')?.errors  && this.submitted  }">
+                    <option value=" ">Seleccione</option>
+                    <option *ngFor="let row of dataResponsableProceso" value={{row.idSprEquipoGerencial}}>
+                      {{row.participacion}} | {{row.nombres}}
+                    </option>
+                  </select>
+                  <div class="col text-danger">
+                    <span class="font-italic"
+                      *ngIf="this.formObjetivoIndicadores.get('idSprEnfoque')?.errors?.['required'] && this.submitted">El
+                      campo rol no puede estar vacio</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-group row mb-2">
+                <div class="col col-md-2 text-md-right">
+                    <label for="fechaInicio" class=" form-control-label text-md-right pt-1"><b>Fecha Inicio:</b></label>
+                </div>
+                <div class="col-12 col-md-4">
+                    <input type="date" class="form-control" required="true" placeholder="fechaInicio" formControlName="fechaInicio"
+                    [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('fechaInicio')?.errors  && this.submitted  }" date>
+                    <div class="col text-danger">
+                      <span class="font-italic" *ngIf="this.formObjetivoIndicadores.get('fechaInicio')?.errors?.['required'] && this.submitted">El campo fecha no puede estar vacio</span>
+                    </div>
+                </div>
+
+              <div class="col col-md-1 text-md-right">
+                  <label for="estado" class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+              </div>
+              <div class="col-12 col-md-5 ">
+                <select class="form-select " id="estado" formControlName="estado"
+                    required="true"
+                    [ngClass]="{'is-invalid': this.formObjetivoIndicadores.get('estado')?.errors  && this.submitted  }">
+
+                    <option [value]="item.value" *ngFor="let item of selectItems">{{item.label}}
+                    </option>
+                </select>
+                <div class="col text-danger">
+                    <span class="font-italic"
+                        *ngIf="this.formObjetivoIndicadores.get('estado')?.errors?.['required'] && this.submitted">Este
+                        campo no puede estar vacio</span>
+                </div>
+            </div>
+          </div>
+
+
+
+                       </div>
+                   </form>
+               </div>
+               <div class="modal-footer">
+                   <button type="button" class="btn btn-secondary waves-effect"
+                       (click)="modal.close();">Cerrar</button>
+                   <button type="button" class="btn btn-info" (click)="onSubmit()"
+                       >Guardar</button>
+               </div>
+           </div>
+       </div>
+ </jw-modal>
+
+
+ <jw-modal id="{{nameModal1}}">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%">
+    <div class="modal-content">
+        <div class="modal-header pb-3">
+            <button type="button" class="btn-close" (click)="modal.close();"
+    aria-label="Close"></button>
+      </div>
+      <div class="modal-body px-5">
+        <nav>
+          <div class="nav nav-tabs" id="nav-tab" role="tablist">
+              <button class="nav-link active" id="detalle-tab" data-bs-toggle="tab"
+                  data-bs-target="#detalle" type="button" role="tab" aria-controls="detalle"
+                  aria-selected="true">Caracteristicas Indicador</button>
+              <button class="nav-link" id="hito-tab" data-bs-toggle="tab"
+                  data-bs-target="#hito" type="button" role="tab" aria-controls="hito"
+                  aria-selected="false">Configuracion Avanzada</button>
+          </div>
+      </nav>
+      <div class="tab-content" id="nav-tabContent">
+          <div class="tab-pane fade show active" id="detalle" role="tabpanel"
+              aria-labelledby="detalle-tab"><app-config-indicador-objetivo [init]="configuracionIndicadores"></app-config-indicador-objetivo></div>
+
+              <div class="tab-pane fade" id="hito" role="tabpanel"
+              aria-labelledby="hito-tab"></div>
+
+              </div>
+
+      </div>
+    </div>
+  </div>
+
+
+  </jw-modal>
+
+

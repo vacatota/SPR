@@ -1,0 +1,407 @@
+<div class="row">
+	<div class="col-sm-12">
+		<div class="card card-border">
+			<div class="container card-body table-responsive">
+				<div class="row">
+					<div class="col-md-12">
+						<div id="accordion" class="mb-3">
+							<div class="card mb-1" *ngFor="let row of dataProyectoRiesgo; let indiceUno = index">
+								<div class="card-header" id="abc">
+									<h5 class="m-0">
+										<a class="text-dark" data-bs-toggle="collapse" href="#id_{{ indiceUno + 1 }}"
+											aria-expanded="true">
+											<i class="mdi mdi-help-circle me-1 text-primary"></i>
+											{{ row.lineaAccion }}
+										</a>
+									</h5>
+								</div>
+
+								<div id="id_{{ indiceUno + 1 }}" class="collapse" aria-labelledby="abcd"
+									data-bs-parent="#accordion">
+									<div class="card-body">
+										<div class="row">
+											<div class="col-sm-12">
+												<div class="card card-border">
+													<div class="card-header">
+														<div class="row">
+															<div class="col-sm-6 text-sm-right">
+																<button type="button"
+																	class="btn btn-sm btn-success waves-effect"
+																	(click)="openModal(row)">
+																	<i class="fas fa-plus fa-lg mr-1"></i> Nuevo
+																</button>
+															</div>
+														</div>
+													</div>
+
+													<div class="col-sm-12">
+														<div class="card card-border">
+															<div class="container card-body table-responsive">
+																<table
+																	class="table table-striped table-bordered row-border hover">
+																	<thead>
+																		<tr>
+																			<th>Nro.</th>
+																			<th>Riesgo</th>
+																			<th>Probabilidad</th>
+																			<th>Impacto</th>
+																			<th>Calificacion</th>
+																			<th>Responsable</th>
+																			<th>Fecha de ultima actualización</th>
+																			<th>Acciones cerradas totales</th>
+																			<th>Archivos anexos</th>
+																			<th>Estado</th>
+																			<th>Acciones</th>
+																		</tr>
+																	</thead>
+																	<tbody>
+																		<tr
+																			*ngFor=" let row of dataProyectoRiesgo[indiceUno].dataRiesgoMap; let indice = index">
+																			<td>{{ indice + 1 }}</td>
+																			<td>{{ row.nombre }}</td>
+																			<td>{{ row.probabilidad }} %</td>
+																			<td>{{ row.impacto }} %</td>
+																			<td>{{ row.calificacion }} %</td>
+																			<td>{{ row.gradoNombres}}</td>
+																			<td>{{ row.fecha }}</td>
+																			<td></td>
+																			<td></td>
+																			<td>{{row.estado == "1"? "Activo": "Inactivo"}}</td>
+																			<td class="text-center col-sm-auto">
+																				<button type="button" tooltip="Editar"
+																					class="btn btn-sm btn-link waves-effect rounded-pill"
+																					title="Editar este registro"
+																					(click)="openModalGestion(row)">
+																					<i class="fas fa-cog fa-lg"></i>
+																				</button>
+																				<button type="button" tooltip="Editar"
+																					class="btn btn-sm btn-link waves-effect rounded-pill"
+																					title="Editar este registro"
+																					(click)="edit(row)">
+																					<i
+																						class="fas fa-pencil-alt fa-lg"></i>
+																				</button>
+																				<button type="button"
+																					class="btn btn-sm btn-link waves-effect"
+																					title="Eliminar este registro"
+																					(click)="delete(row.idSprRiesgo)">
+																					<i
+																						class="fas fa-trash-alt fa-lg"></i>
+																				</button>
+																			</td>
+																		</tr>
+																	</tbody>
+																</table>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- MODAL PARA LA CONFIRMACION DEL BORRADO -->
+		<jw-modal id="delRiesgoProyecto" [isDelete]="true" (confirmation)="confirmDelete()"></jw-modal>
+
+		<!-- ############################################################################################################# -->
+		<!-- ######################################    MODALES       ##################################################### -->
+		<!-- ############################################################################################################# -->
+
+		<jw-modal id="{{ nameModalRiesgoP }}">
+			<!-- MODAL PARA CREAR Y EDITAR -->
+			<div class="modal-dialog modal-xl modal-dialog-scrollable" style="padding-top: 6%">
+				<div class="modal-content">
+					<div class="modal-header pb-3">
+						<h3 class="modal-title">{{ nameAppP }}</h3>
+						<button type="button" class="btn-close" (click)="modal.close()" aria-label="Close"></button>
+					</div>
+					<div class="modal-body px-5">
+						<form action="#" [formGroup]="formRiesgo" class="needs-validation was-validated">
+							<div class="row">
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="nombre"
+											class="form-control-label text-md-right pt-1"><b>Riesgo:</b></label>
+									</div>
+									<div class="col-12 col-md-10">
+										<input type="text" maxlength="50" class="form-control"
+											style="text-transform: uppercase" required="true" placeholder
+											formControlName="nombre"
+											[ngClass]="{'is-invalid': this.formRiesgo.get('nombre')?.errors && this.submitted }" />
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('nombre')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="descripcion"
+											class="form-control-label text-md-right pt-1"><b>Descripcion:</b>
+										</label>
+									</div>
+									<div class="col-12 col-md-10">
+										<textarea class="form-control" id="descripcion" placeholder
+											formControlName="descripcion" rows="5" cols="30"
+											[ngClass]="{'is-invalid':this.formRiesgo.get('descripcion')?.errors && this.submitted }">
+										</textarea>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('descripcion')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio
+											</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="fechaIdentificacion"
+											class="form-control-label text-md-right pt-1"><b>Fecha
+												Identificación:</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<input type="date" class="form-control" required="true"
+											placeholder="fechaIdentificacion" formControlName="fechaIdentificacion" />
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('fechaIdentificacion')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+
+									<div class="col col-md-2 text-md-right">
+										<label for="fechaOcurrencia"
+											class="form-control-label text-md-right pt-1"><b>Fecha
+												Ocurrente:</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<input type="date" class="form-control" required="true"
+											placeholder="fechaOcurrencia" formControlName="fechaOcurrencia" />
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('fechaOcurrencia')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="probabilidad"
+											class="form-control-label text-md-right pt-1"><b>Probabilidad (%)</b>
+										</label>
+									</div>
+									<div class="col-12 col-md-4">
+										<select class="form-select" id="probabilidad" formControlName="probabilidad"
+											required="true" [ngClass]="{'is-invalid': this.formRiesgo.get('probabilidad')?.errors &&  this.submitted }">
+											<option value selected>Seleccione</option>
+											<option value="0">0 %</option>
+											<option value="10">10 %</option>
+											<option value="20">20 %</option>
+											<option value="30">30 %</option>
+											<option value="40">40 %</option>
+											<option value="50">50 %</option>
+											<option value="60">60 %</option>
+											<option value="70">70 %</option>
+											<option value="80">80 %</option>
+											<option value="90">90 %</option>
+											<option value="100">100 %</option>
+										</select>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('probabilidad')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio
+											</span>
+										</div>
+									</div>
+
+									<div class="col col-md-2 text-md-right">
+										<label for="impacto" class="form-control-label text-md-right pt-1"><b>Impacto
+												(%)</b>
+										</label>
+									</div>
+									<div class="col-12 col-md-4">
+										<select class="form-select" id="impacto" formControlName="impacto"
+											required="true" [ngClass]="{
+						'is-invalid':
+						  this.formRiesgo.get('impacto')?.errors &&
+						  this.submitted
+					  }">
+											<option value selected>Seleccione</option>
+											<option value="0">0 %</option>
+											<option value="10">10 %</option>
+											<option value="20">20 %</option>
+											<option value="30">30 %</option>
+											<option value="40">40 %</option>
+											<option value="50">50 %</option>
+											<option value="60">60 %</option>
+											<option value="70">70 %</option>
+											<option value="80">80 %</option>
+											<option value="90">90 %</option>
+											<option value="100">100 %</option>
+										</select>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('impacto')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="calificacion"
+											class="form-control-label text-md-right pt-1"><b>Calificación (%):</b>
+										</label>
+									</div>
+									<div class="col-12 col-md-4">
+										<input type="number" class="form-control" readonly="readonly" required="true"
+											id="calificacion" placeholder="{{ calificacion() }} %" />
+									</div>
+
+									<div class="col col-md-2 text-md-right">
+										<label for="costoPotencial"
+											class="form-control-label text-md-right pt-1"><b>Costo
+												Potencial:</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<input type="number" class="form-control" required="true" id="costoPotencial"
+											placeholder="Ej: 100" formControlName="costoPotencial" [ngClass]="{'is-invalid': this.formRiesgo.get('costoPotencial')?.errors &&  this.submitted }" number />
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('costoPotencial')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="idSprEstructuraEdr"
+											class="col-form-label text-md-right"><b>Estructura
+												(EDR):</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<select class="form-select" id="idSprEstructuraEdr"
+											formControlName="idSprEstructuraEdr" required="true"
+											[ngClass]="{'is-invalid':
+											this.formRiesgo.get('idSprEstructuraEdr')?.errors && this.submitted}">
+											<option value selected="selected">
+												Seleccionar..
+											</option>
+											<option *ngFor="let catRiesgoEdr of dataCatComun"
+												value="{{ catRiesgoEdr.idSprComun }}">
+												{{ catRiesgoEdr.nombre }}
+											</option>
+										</select>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('idSprEstructuraEdr')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+
+									<div class="col col-md-2 text-md-right">
+										<label for="fechaCierre" class="form-control-label text-md-right pt-1"><b>Fecha
+												Cierre:</b>
+										</label>
+									</div>
+									<div class="col-12 col-md-4">
+										<input type="date" class="form-control" required="true"
+											placeholder="fechaCierre" formControlName="fechaCierre"
+											[ngClass]="{'is-invalid': this.formRiesgo.get('fechaCierre')?.errors &&this.submitted }" />
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('fechaCierre')?.errors?.['required'] && this.submitted">Este
+												campo no puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+
+								<div class="form-group row mb-2">
+									<div class="col col-md-2 text-md-right">
+										<label for="idSprEquipoGerencial"
+											class=" form-control-label text-md-right pt-1"><b>Responsable:</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<select class="form-select" id="idSprEquipoGerencial"
+											formControlName="idSprEquipoGerencial" required="true"
+											[ngClass]="{'is-invalid': this.formRiesgo.get('idSprEquipoGerencial')?.errors  && this.submitted  }">
+											<option value=" ">Seleccione</option>
+											<option *ngFor="let row of dataResponsableProceso"
+												value={{row.idSprEquipoGerencial}}>
+												{{row.participacion}} | {{row.nombres}}
+											</option>
+										</select>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('idSprEnfoque')?.errors?.['required'] && this.submitted">El
+												campo rol no puede estar vacio</span>
+										</div>
+									</div>
+
+									<div class="col col-md-2 text-md-right">
+										<label for="estado" class="col-form-label text-md-right"><b>Estado:</b></label>
+									</div>
+									<div class="col-12 col-md-4">
+										<select class="form-select" id="estado" formControlName="estado"
+											required="true"
+											[ngClass]="{'is-invalid': this.formRiesgo.get('estado')?.errors && this.submitted}">
+											<option [value]="item.value" *ngFor="let item of selectItems">
+												{{ item.label }}
+											</option>
+										</select>
+										<div class="col text-danger">
+											<span class="font-italic"
+												*ngIf="this.formRiesgo.get('estado')?.errors?.['required'] && this.submitted">Este
+												campo no
+												puede estar vacio</span>
+										</div>
+									</div>
+								</div>
+							</div>
+						</form>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary waves-effect" (click)="modal.close()">
+							Cerrar
+						</button>
+						<button type="button" class="btn btn-info" (click)="onSubmit()">
+							Guardar
+						</button>
+					</div>
+				</div>
+			</div>
+		</jw-modal>
+
+		<jw-modal id="{{ nameModalGestionRP }}">
+			<div class="modal-dialog modal-xl modal-dialog-scrollable" style="padding-top: 6%">
+				<div class="modal-content">
+					<div class="modal-header pb-3">
+						<h3 class="modal-title">{{ nameAppGestionRP }}</h3>
+						<button type="button" class="btn-close" (click)="modal.closeId(nameModalGestionRP)"
+							aria-label="Close"></button>
+					</div>
+					<div class="modal-body px-5">
+						<app-accion-proyecto [data]="idRiesgoSeleccionado"></app-accion-proyecto>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary waves-effect"
+							(click)="modal.closeId(nameModalGestionRP)">
+							Cerrar
+						</button>
+					</div>
+				</div>
+			</div>
+		</jw-modal>
+	</div>
+</div>

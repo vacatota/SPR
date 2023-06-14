@@ -1,0 +1,103 @@
+<div class="row">
+    <div class="col-xl-12">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="header-title mb-4">{{nameApp}}</h4>
+
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                      <button class="nav-link active" id="nav-objetivos-tab" data-bs-toggle="tab" data-bs-target="#nav-objetivos" type="button" role="tab" aria-controls="nav-objetivos" aria-selected="false" (click)="openObjetivos()">Objetivos</button>
+                      <button *ngIf="idSprNivelN5 != nivelSelect" class="nav-link " id="nav-lineasAccion-tab" data-bs-toggle="tab" data-bs-target="#nav-lineasAccion" type="button" role="tab" aria-controls="nav-lineasAccion" aria-selected="true" (click)="openLineasAccion()">Lineas de Acción</button>
+                      <button *ngIf="idSprNivelN5 == nivelSelect" class="nav-link" id="nav-planAccion-tab" data-bs-toggle="tab" data-bs-target="#nav-planAccion" type="button" role="tab" aria-controls="nav-planAccion" aria-selected="false"(click)="openObjetivos()">Plan de Acción</button>
+                      <button class="nav-link" id="nav-proyecto-tab" data-bs-toggle="tab" data-bs-target="#nav-proyecto" type="button" role="tab" aria-controls="nav-proyecto" aria-selected="false" (click)="openProyectos()">Proyectos</button>
+                    </div>
+                  </nav>
+                  <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-objetivos" role="tabpanel" aria-labelledby="nav-objetivos-tab">
+                        
+                        <app-riesgo-objetivo [init]="objetivo"></app-riesgo-objetivo>
+                    </div>
+                    <div class="tab-pane fade " id="nav-lineasAccion" role="tabpanel" aria-labelledby="nav-lineasAccion-tab">
+                        <app-riesgo-linea-accion [init]="lineaAccion"></app-riesgo-linea-accion>
+                    </div>
+                    <div  class="tab-pane fade" id="nav-planAccion" role="tabpanel" aria-labelledby="nav-planAccion-tab">
+                        <app-riesgo-plan-accion [init]="planAccion"></app-riesgo-plan-accion>
+                    </div>
+                    <div class="tab-pane fade" id="nav-proyecto" role="tabpanel" aria-labelledby="nav-proyecto-tab">
+                        <app-riesgo-proyecto [init]="proyecto"></app-riesgo-proyecto>
+                    </div>
+                  </div>
+
+
+
+<!--
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a href="#objetivos" data-bs-toggle="tab" aria-expanded="false" class="nav-link   active "
+                            (click)="openObjetivos()">
+                            Objetivos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#lineas-accion" data-bs-toggle="tab" aria-expanded="true" class="nav-link "
+                            (click)="openLineasAccion()">
+                            Líneas de acción
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#planes-accion" data-bs-toggle="tab" aria-expanded="false" class="nav-link  "
+                        (click)="openObjetivos()">
+                            Planes de acción
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#proyectos" data-bs-toggle="tab" aria-expanded="false" class="nav-link "
+                            (click)="openProyectos()">
+                            Proyectos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#procesos" data-bs-toggle="tab" aria-expanded="true" class="nav-link "
+                            (click)="openProcesos()">
+                            Procesos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#vision" data-bs-toggle="tab" aria-expanded="false" class="nav-link">
+                            Visión
+                        </a>
+                    </li>
+                </ul>
+                <div class="tab-content">
+
+                    <div class="tab-pane show active  " id="objetivos">
+                        
+                        <app-riesgo-objetivo [init]="objetivo"></app-riesgo-objetivo>
+                      
+                    </div>
+                    <div class="tab-pane " id="lineas-accion">
+                        
+                        <app-riesgo-linea-accion [init]="lineaAccion"></app-riesgo-linea-accion>
+                       
+                    </div>
+                    <div class="tab-pane " id="planes-accion">
+                        <app-riesgo-plan-accion [init]="objetivo"></app-riesgo-plan-accion>
+                    </div>
+                    <div class="tab-pane  " id="proyectos">
+                        <app-riesgo-proyecto [init]="proyecto"></app-riesgo-proyecto>
+                    </div>
+                    <div class="tab-pane  " id="procesos">
+
+                    </div>
+                    <div class="tab-pane" id="vision">
+                        <p>Visión</p>
+                    </div>
+
+                </div>
+            -->
+            </div>
+        </div> <!-- end card-->
+    </div> <!-- end col -->
+</div>
+<!-- end row -->
+

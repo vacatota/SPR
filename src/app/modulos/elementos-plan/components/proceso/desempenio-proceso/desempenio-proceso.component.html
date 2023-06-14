@@ -1,0 +1,224 @@
+<div class="row">
+  <div class="col-sm-12">
+    <div class="card card-border">
+      <div class="card-header">
+        <div class="row">
+          <div class="col-sm-6 text-sm-right">
+            <button type="button" class="btn btn-sm btn-success waves-effect" (click)="openModal()"><i
+                class="fas fa-plus fa-lg mr-1"></i> Nuevo</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="container card-body table-responsive">
+        <table datatable [dtOptions]="dtOptions" [dtTrigger]="dtTrigger"
+          class="table table-striped table-bordered row-border hover">
+          <thead>
+            <tr>
+              <th>Nro.</th>
+              <th>Nombre Proceso</th>
+              <th>Calificacion</th>
+              <th>Accion Tomar</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr *ngFor="let desempenioProceso of dataDesempenioProceso;let indice=index">
+              <td>{{indice+1}}</td>
+              <td>{{desempenioProceso.nombre}}</td>
+              <td>{{desempenioProceso.calificacion}}</td>
+              <td>{{desempenioProceso.accionTomar}}</td>
+              <td>{{((desempenioProceso.estado == '1')? 'Activo': 'Inactivo')}}</td>
+              <td class="text-center col-sm-auto">
+                <button type="button" tooltip="Editar" class="btn btn-sm btn-link waves-effect rounded-pill"
+                  title="Editar este registro" (click)="edit(desempenioProceso)">
+                  <i class="fas fa-pencil-alt fa-lg"></i>
+                </button>
+                <button type="button" class="btn btn-sm btn-link waves-effect" title="Eliminar este registro"
+                  (click)="deleteDesempenio(desempenioProceso.idSprDesempenioProceso)">
+                  <i class="fas fa-trash-alt fa-lg"></i>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<jw-modal id="delete-desempenio">
+  <div class="modal-dialog" style="padding-top:5%">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title" id="myCenterModalLabel">Advertencia!</h4>
+        <button type="button" class="btn-close" (click)="modal.close()"></button>
+      </div>
+      <div class="modal-body">
+        <p class="pl-4"><i class="pl-2 fas fa-exclamation-circle text-warning  fa-lg fa-2x"></i>&nbsp; &nbsp; Esta
+          seguro que desea eliminar este registro? </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary waves-effect" (click)="modal.close();">Cerrar</button>
+        <button type="button" class="btn btn-primary" (click)="confirmDelete()">Si, borrar!</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</jw-modal>
+
+<jw-modal id="{{nameModal}}">
+  <div class="modal-dialog modal-lg modal-dialog-scrollable" style="padding-top:6%">
+    <div class="modal-content">
+      <div class="modal-header pb-3">
+        <h3 class="modal-title">{{nameApp}}</h3>
+        <button type="button" class="btn-close" (click)="closeModalDesempenio();" aria-label="Close"></button>
+      </div>
+
+      <div class="modal-body px-5">
+        <form action="#" [formGroup]="formDesempenioProceso" class="needs-validation was-validated form">
+
+          <input type="hidden" id="idSprDesempenioProceso" formControlName="idSprDesempenioProceso">
+          <div class="form-group row mb-2">
+                </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Nombre:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <input type="hidden" id="idSprDesempenioProceso" formControlName="idSprDesempenioProceso" requiered
+                class="is-invalid">
+              <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;" required="true"
+                placeholder="DesempenioProceso" formControlName="nombre"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('nombre')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('nombre')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="nombre" class=" form-control-label text-md-right pt-1"><b>Acciones:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <input type="text" maxlength="50" class="form-control" style="text-transform:uppercase;" required="true"
+                placeholder="DesempenioProceso" formControlName="accionTomar"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('accionTomar')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('accionTomar')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprCaracteristica"
+                class=" form-control-label text-md-right pt-1"><b>Caracteristica:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-12" id="idSprCaracteristica" formControlName="idSprCaracteristica"
+                required="true"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('idSprCaracteristica')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let catCaracteristica of dataCaracteristicas" value={{catCaracteristica.idSprComun}}>
+                  {{catCaracteristica.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('idSprCaracteristica')?.errors?.['required'] && this.formSubmitted">El
+                  campo nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprImportancia" class=" form-control-label text-md-right pt-1"><b>Importancia:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-9" formControlName="idSprImportancia" required="true"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('idSprImportancia')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let catImportancia of dataImportancia" value={{catImportancia.idSprComun}}>
+                  {{catImportancia.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('idSprImportancia')?.errors?.['required'] && this.formSubmitted">El
+                  campo nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprDesempenio" class=" form-control-label text-md-right pt-1"><b>Desempeño:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <select class="form-select col-12" id="idSprDesempenio" formControlName="idSprDesempenio" required="true"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('idSprDesempenio')?.errors  && this.formSubmitted  }">
+
+                <option *ngFor="let catDesempenio of dataDesempenio" value={{catDesempenio.idSprComun}}>
+                  {{catDesempenio.nombre}}
+                </option>
+              </select>
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('idSprDesempenio')?.errors?.['required'] && this.formSubmitted">El
+                  campo nivel
+                  no puede estar vacio</span>
+              </div>
+            </div>
+
+            <div class="col col-md-2 text-md-right">
+              <label for="idSprCalificacion" class=" form-control-label text-md-right pt-1"><b>Calificación:</b></label>
+            </div>
+            <div class="col-12 col-md-4">
+              <input type="number" maxlength="50" min="0" max="100" class="form-control"
+                style="text-transform:uppercase;" required="true" placeholder="dias" onkeypress="return
+              (event.charCode>= 48 && event.charCode <= 57)" formControlName="calificacion"
+                oninput="this.value = this.value.toUpperCase();"
+                [ngClass]="{'is-invalid': this.formDesempenioProceso.get('calificacion')?.errors  && this.formSubmitted  }">
+              <div class="col text-danger">
+                <span class="font-italic"
+                  *ngIf="this.formDesempenioProceso.get('calificacion')?.errors?.['required'] && this.formSubmitted">Este
+                  campo no puede estar vacio</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group row mb-2">
+            <div class="col col-md-2 text-xl-right">
+              <label for="estado" class=" form-control-label text-md-right pt-1"><b>Estado:</b></label>
+            </div>
+            <div class="col-12 col-md-10">
+              <select id="estado" class="form-select" formControlName="estado" required>
+                <option [value]="item.value" *ngFor="let item of selectItems">{{item.label}}
+                </option>
+              </select>
+              <small class="invalid-feedback" *ngIf="formSubmitted && DesempenioProcesoForm['estado'].errors">Campo
+                requerido.</small>
+            </div>
+          </div>
+
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary waves-effect"
+              (click)="closeModalDesempenio();">Cerrar</button>
+            <button type="button" class="btn btn-info" (click)="onSubmit()">Guardar</button>
+          </div>
+          </form>
+      </div>
+      </div>
+      </div>
+    </jw-modal>
